@@ -1,6 +1,6 @@
 # dicke-switched-receiver
 This repository contains code developed for a microwave receiver measuring trace gases in the atmosphere at Onsala Space Observatory, Sweden.
-You will find a fully functional Dicke-switching radiometer implementation using Python and Gnuradio.
+You will find a fully functional Dicke Radiometer implementation using Python and Gnuradio.
 
 Basic overview:
 - Server.py: A socket server for controlling and handling data from the receiver
