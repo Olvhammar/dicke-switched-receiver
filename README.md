@@ -8,6 +8,6 @@ Basic overview:
 - Analyze.py: Stacks and averages FFT spectrums
 - Finalize.py: Finalizes the averaging procedure and creates e.g. FITS-files
 - Receiver.py: Gnuradio flowgraph, performs FFT computions as well as real time averaging and saves it to relevant file sinks
-- USRP_start.sh:  GNU radio optimization script including RAM Disk initialization.
+- USRP_start.sh:  GNU Radio optimization script including RAM Disk initialization/PCIe init.
 
 For more information please refer to the documention sub repository.
