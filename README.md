@@ -1,4 +1,4 @@
-# dicke-switched-receiver
+# GNURadio-FFTS
 This repository contains code developed for a microwave receiver measuring trace gases in the atmosphere at Onsala Space Observatory, Sweden.
 You will find a fully functional spectrometer implementation using Python and Gnuradio for usage in both total power measurements as well as switched measurements.
 
@@ -11,3 +11,4 @@ Basic overview:
 - USRP_start.sh:  GNU Radio optimization script including RAM Disk initialization/PCIe init.
 
 For more information please refer to the documention sub repository.
+Simon Olvhammar
