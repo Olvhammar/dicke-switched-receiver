@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 ##################################################
 # Control measurement class
-# Generated: Sun Jun 14 20:57:15 2015
 ##################################################
 from Receiver import *
 from Analyze import *

@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 ##################################################
-# Socket Server
-# Generated: Sun Jun 14 20:57:15 2015
+# Socket Server for communication and controlling measurements
 ##################################################
 import socket
 import sys
@@ -60,7 +59,7 @@ with open(configfil, 'wb') as configfile:
 	config.write(configfile)
 fftSize = int(config.get('USRP','channels'))
 samp_rate = float(config.get('USRP','bw'))*1e6
-interval = 5	#Default interval for switched measuerements
+interval = 5	#Default interval for switched measurements
 gain = float(config.get('USRP','gain'))
 c_freq = float(config.get('USRP','cfreq'))*1e6
 #Initialize USRP device
@@ -196,14 +195,14 @@ def clientthread(conn):
 				conn.send('ERROR Bad number of channels - conf:fft:channels ' +channels + '\n')
 		elif command == conf_c_freq and value != -2:
 			c_freq = value
-			if int(c_freq) >= 400 and int(c_freq) <= 4400:
+			if float(c_freq) >= 400 and float(c_freq) <= 4400:
 				tb.set_c_freq(c_freq)
 				config.set('USRP','cfreq', c_freq)
 				with open(configfil, 'wb') as configfile:
 					config.write(configfile)
 				conn.send('OK - conf:usrp:cfreq ' + c_freq + ' [MHz]\n')
 			else:
-				conn.send('ERROR Bad center frequency - conf:usrp:cfreq ' +c_freq+ ' [MHz]\n')
+				conn.send('ERROR Bad center frequency - conf:usrp:cfreq ' + c_freq + ' [MHz]\n')
 			
 		#Set manual gain
 		elif command == 'conf:usrp:gain' and value != -2:

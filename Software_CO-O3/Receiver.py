@@ -1,8 +1,7 @@
 #!/usr/bin/env python2
 ##################################################
 # GNU Radio Python Flow Graph
-# Title: Calculates FFT from the USRP sample stream and stores in files
-# Generated: Sun Jun 14 20:57:15 2015
+# Title: Calculates FFT, in stream averaging, probes and storage
 ##################################################
 
 from gnuradio import analog
