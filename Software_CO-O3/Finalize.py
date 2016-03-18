@@ -17,7 +17,7 @@ from astropy.io import fits
 import shutil
 
 class Finalize():
-	def __init__(self, index, fftSize, c_freq, samp_rate, edit, sig_time, ref_time, switched, powTime, user):
+	def __init__(self, index, fftSize, c_freq, samp_rate, edit, sig_time, ref_time, switched, powTime, user, date):
 		self.user = user
 		self.index = index
 		self.fftSize = fftSize
@@ -30,6 +30,7 @@ class Finalize():
 		self.obs_time = sig_time + ref_time
 		self.switched = switched
 		self.totPowTime = powTime
+		self.date = date
 		
 		print "sigTime: "
 		print self.sig_time
@@ -123,8 +124,7 @@ class Finalize():
 		hdu.header['OBSERVER'] = 'Olvhammar'
 		hdu.header['ORIGIN'] = 'Onsala Space Observatory, SWEDEN'
 		
-		date = ephem.now().tuple()
-		year = str(date[0]); month=str(date[1]); day=str(date[2]); hour = str(date[3]); minute =str(date[4]); sec = str(round(date[5]))
+		year = str(self.date[0]); month=str(self.date[1]); day=str(self.date[2]); hour = str(self.date[3]); minute =str(self.date[4]); sec = str(round(self.date[5]))
 		hdu.header['DATE-OBS'] = year.zfill(4) + '-' + month.zfill(2)+'-'+ day.zfill(2)
 		hdu.header['UTC'] = hour.zfill(2)+':'+ minute.zfill(2) +':' + sec.zfill(4)
 		hdu.header['OBSTIME'] = obs_time

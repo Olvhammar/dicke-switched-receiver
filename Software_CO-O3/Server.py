@@ -7,6 +7,7 @@ import sys
 import subprocess
 import ConfigParser
 import os
+import ephem
 from thread import *
 from Measurement import *
 from Analyze import *
@@ -14,6 +15,7 @@ from threading import Thread
 from multiprocessing import Process
 from Finalize import *
 from PyQt4 import QtCore
+from gnuradio.fft import window
 #stackoverflow.com/questions/380870/python-single-instance-of-program
 from tendo import singleton
 me = singleton.SingleInstance() #Makes sure only one instance is running
@@ -177,10 +179,10 @@ def clientthread(conn):
 			samp_rate = value
 			#if int(samp_rate) == 120 or int(samp_rate) == 60 or int(samp_rate) == 30 or int(samp_rate) == 20:
 			tb.set_samp_rate(samp_rate)
-			config.set('USRP','bw', samp_rate)
+			config.set('USRP','bw', str(tb.usrp.get_samp_rate()*1e-6))
 			with open(configfil, 'wb') as configfile:
 				config.write(configfile)
-			conn.send('OK - conf:usrp:bw ' + samp_rate + ' [MHz]\n')
+			conn.send('OK - conf:usrp:bw ' + str(tb.usrp.get_samp_rate()*1e-6) + ' [MHz]\n')
 			#else:
 			#	conn.send('ERROR Bad bandwidth - conf:usrp:bw ' + samp_rate + '\n')
 		elif command == conf_channels and value != -2:
@@ -195,15 +197,14 @@ def clientthread(conn):
 				conn.send('ERROR Bad number of channels - conf:fft:channels ' +channels + '\n')
 		elif command == conf_c_freq and value != -2:
 			c_freq = value
-			if float(c_freq) >= 400 and float(c_freq) <= 4400:
+			if float(c_freq) >= 400 and float(c_freq) <= 4400: #Change value for UBX, specified are for SBX
 				tb.set_c_freq(c_freq)
-				config.set('USRP','cfreq', c_freq)
+				config.set('USRP','cfreq', str(tb.usrp.get_center_freq(0)*1e-6))
 				with open(configfil, 'wb') as configfile:
 					config.write(configfile)
-				conn.send('OK - conf:usrp:cfreq ' + c_freq + ' [MHz]\n')
+				conn.send('OK - conf:usrp:cfreq ' + str(tb.usrp.get_center_freq(0)*1e-6) + ' [MHz]\n')
 			else:
 				conn.send('ERROR Bad center frequency - conf:usrp:cfreq ' + c_freq + ' [MHz]\n')
-			
 		#Set manual gain
 		elif command == 'conf:usrp:gain' and value != -2:
 			gain = value
@@ -211,27 +212,63 @@ def clientthread(conn):
 			config.set('USRP','gain', gain)
 			with open(configfil, 'wb') as configfile:
 				config.write(configfile)
-			conn.send('OK - conf:usrp:gain ' + gain)
+			conn.send('OK - conf:usrp:gain ' + str(tb.usrp.get_gain(0)))
+		
 
 		#Questions to server
 		elif command == 'state?':
 			state = config.get('CTRL','state').strip()
 			conn.send(state + ' - state?\n')
 		elif command == 'conf:usrp:bw?':
-			bw = config.get('USRP', 'bw')
-			conn.send(bw + ' [Mhz]' + ' - conf:usrp:bw?\n')
+			bw = str(tb.usrp.get_samp_rate()*1e-6)
+			conn.send(bw + ' [MHz]' + ' - conf:usrp:bw?\n')
 		elif command == 'conf:usrp:gain?':
-			gain = config.get('USRP', 'gain')
+			gain = str(tb.usrp.get_gain(0))
 			conn.send(gain + ' [dB]' + ' - conf:usrp:gain?\n')
 		elif command == 'conf:usrp:cfreq?':
-			c = config.get('USRP', 'cfreq')
-			conn.send(c + ' [Mhz] - conf:usrp:cfreq?\n')
+			c = str(tb.usrp.get_center_freq(0)*1e-6)
+			conn.send(c + ' [MHz] - conf:usrp:cfreq?\n')
 		elif command == 'conf:fft:channels?':
 			channels = config.get('USRP', 'channels')
 			conn.send(channels + ' - conf:fft:channels?\n')
 		elif command == 'conf:time:obs?':
 			i_time = config.get('CTRL', 'obs_time')
 			conn.send(i_time + ' - conf:time:obs?\n')
+			
+		elif command == 'conf:fft:window?':
+			window = config.get('USRP', 'fft_window')
+			conn.send(window + ' - conf:fft:window?\n')
+			
+		## Get settings ##
+		elif command == 'read:settings':
+			conn.send("""
+	GNURadio-FFTS state and config
+	------------------------------------
+	State			| {state}
+	Bandwidth   		| {bandwidth} MHz
+	Center frequency     	| {cfreq} MHz
+	Number of channels     	| {channels} #
+	Resolution     		| {resolution} kHz
+	USRP Gain     		| {gain} dB
+	Switch frequency     	| {switch_freq} Hz
+	Master clock rate     	| {clock_rate} MHz
+	I/Q rate     		| {samp_rate} MHz
+	Clock source     	| {clock_source}
+	Time source     	| {time_source}
+	------------------------------------
+		""".format(
+				state = config.get('CTRL','state').strip(),
+				bandwidth = tb.samp_rate/1e6,
+				cfreq = tb.c_freq/1e6,
+				channels = tb.fftSize,
+				resolution = (tb.samp_rate/tb.fftSize)/1e3,
+				gain = tb.gain,
+				switch_freq = 1/float(1.1),
+				clock_rate = tb.usrp.get_clock_rate(0)/1e6,
+				samp_rate = tb.samp_rate/1e6,
+				clock_source = tb.usrp.get_clock_source(0),
+				time_source = tb.usrp.get_time_source(0),
+			))
 
 		#Aborting measurement
 		elif command == 'meas:stop' or command == 'stop':

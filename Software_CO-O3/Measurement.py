@@ -113,6 +113,7 @@ class Measurement:
 		if self.adjust == 1: #Adjust gain?
 			self.meas_adjust()
 		else:
+			self.date = ephem.now().tuple() #Date for FITS-file
 			self.receiver.start() 
 			self.sig_time = 0
 			self.ref_time = 0
@@ -141,7 +142,7 @@ class Measurement:
 			print stop - start
 			edit = 0
 			if int(self.config.get('CTRL','abort')) != 1:
-				td = Finalize(index, self.fftSize, self.c_freq, self.samp_rate, edit, self.sig_time, self.ref_time, self.switched, self.totpowTime, self.user)
+				td = Finalize(index, self.fftSize, self.c_freq, self.samp_rate, edit, self.sig_time, self.ref_time, self.switched, self.totpowTime, self.user, self.date)
 			self.receiver.stop()
 			self.receiver.wait()
 			files = glob.glob('/tmp/ramdisk/*')
@@ -162,6 +163,7 @@ class Measurement:
 		except OSError:
 			pass
 		
+		self.date = ephem.now().tuple()
 		self.receiver.lock()
 		self.receiver.signal_file_sink_1.open("/tmp/ramdisk/totPow")
 		self.receiver.unlock()
@@ -211,7 +213,7 @@ class Measurement:
 					if int(self.config.get('CTRL','abort')) == 1:
 						break
 					elif self.usrp.get_gpio_attr("FP0", "READBACK", 0) == S:
-						time.sleep(1e-3) #Blanking for GnuRadio delay
+						time.sleep(2e-3) #Blanking for GnuRadio delay
 						start1 = time.time()
 						self.receiver.blks2_selector_0.set_output_index(1) #Stream to signal sink
 						while self.usrp.get_gpio_attr("FP0", "READBACK", 0) == S: #File sink closes if Datavalid = 0
@@ -228,7 +230,7 @@ class Measurement:
 						while self.usrp.get_gpio_attr("FP0", "READBACK", 0) == SN or self.usrp.get_gpio_attr("FP0", "READBACK") == RN:
 							continue
 					elif self.usrp.get_gpio_attr("FP0", "READBACK") == R:
-						time.sleep(1e-3)
+						time.sleep(2e-3)
 						start2 = time.time()
 						self.receiver.blks2_selector_0.set_output_index(2) # Stream to reference sink
 						while self.usrp.get_gpio_attr("FP0", "READBACK", 0) == R: #Close file sink datavalid = 0
