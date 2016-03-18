@@ -21,7 +21,7 @@ from astropy.io import fits
 class Measurement:
 	
 	#Constructor
-	def __init__(self, fftSize, samp_rate, measureTime, gain, c_freq, config, user):
+	def __init__(self, fftSize, samp_rate, measureTime, gain, c_freq, config, user, window):
 		
 		self.user = user
 		self.fftSize = int(fftSize)
@@ -37,9 +37,10 @@ class Measurement:
 		self.switched = 1
 		self.measureTimeTotPow = 5
 		self.adjust = 0
+		self.window = window
 		
 		#Initate GnuRadio flowgraph
-		self.receiver = Receiver(self.fftSize, self.samp_rate, self.gain, self.c_freq)
+		self.receiver = Receiver(self.fftSize, self.samp_rate, self.gain, self.c_freq, self.window)
 		
 		#Creates usrp object from receiver
 		self.usrp = self.receiver.uhd_usrp_source_0

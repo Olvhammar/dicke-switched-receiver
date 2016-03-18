@@ -15,7 +15,6 @@ from threading import Thread
 from multiprocessing import Process
 from Finalize import *
 from PyQt4 import QtCore
-from gnuradio.fft import window
 #stackoverflow.com/questions/380870/python-single-instance-of-program
 from tendo import singleton
 me = singleton.SingleInstance() #Makes sure only one instance is running
@@ -64,8 +63,9 @@ samp_rate = float(config.get('USRP','bw'))*1e6
 interval = 5	#Default interval for switched measurements
 gain = float(config.get('USRP','gain'))
 c_freq = float(config.get('USRP','cfreq'))*1e6
+window = config.get('USRP', 'fft_window')
 #Initialize USRP device
-tb =  Measurement(fftSize, samp_rate, interval, gain, c_freq, config, user)
+tb =  Measurement(fftSize, samp_rate, interval, gain, c_freq, config, user, window)
 
 class Worker(Thread):
 	def __init__(self):
@@ -213,7 +213,17 @@ def clientthread(conn):
 			with open(configfil, 'wb') as configfile:
 				config.write(configfile)
 			conn.send('OK - conf:usrp:gain ' + str(tb.usrp.get_gain(0)))
-		
+			
+		elif command == 'conf:fft:window':
+			window = value
+			if window == 'blackman-harris' or window == 'hanning' or window == 'rectangular':
+				tb.receiver.select_window = value
+				config.set('USRP','fft_window',value)
+				with open(configfil, 'wb') as configfile:
+					config.write(configfile)
+				conn.send('OK - conf:fft:window ' + window + '\n')
+			else:
+				conn.send('ERROR Bad FFT Window - conf:fft:window ' + window + '\n')
 
 		#Questions to server
 		elif command == 'state?':
@@ -239,35 +249,39 @@ def clientthread(conn):
 			window = config.get('USRP', 'fft_window')
 			conn.send(window + ' - conf:fft:window?\n')
 			
-		## Get settings ##
-		elif command == 'read:settings':
+		## Read all settings ##
+		elif command == 'read:settings?':
 			conn.send("""
 	GNURadio-FFTS state and config
-	------------------------------------
+	----------------------------------------
 	State			| {state}
-	Bandwidth   		| {bandwidth} MHz
-	Center frequency     	| {cfreq} MHz
-	Number of channels     	| {channels} #
-	Resolution     		| {resolution} kHz
-	USRP Gain     		| {gain} dB
-	Switch frequency     	| {switch_freq} Hz
-	Master clock rate     	| {clock_rate} MHz
-	I/Q rate     		| {samp_rate} MHz
-	Clock source     	| {clock_source}
-	Time source     	| {time_source}
-	------------------------------------
+	Bandwidth		| {bandwidth} [MHz]
+	Center frequency	| {cfreq} [MHz]
+	Number of channels	| {channels} #
+	Resolution		| {resolution} [kHz]
+	Window			| {window}
+	USRP Gain		| {gain} dB
+	Switch frequency	| {switch_freq} [Hz] (Approx CO-O3)
+	Master clock rate	| {clock_rate} MHz
+	I/Q rate		| {samp_rate} MHz
+	Clock source		| {clock_source}
+	Time source		| {time_source}
+	Port			| {port}
+	----------------------------------------
 		""".format(
 				state = config.get('CTRL','state').strip(),
-				bandwidth = tb.samp_rate/1e6,
-				cfreq = tb.c_freq/1e6,
+				bandwidth = str(tb.usrp.get_samp_rate()*1e-6),
+				cfreq = str(tb.usrp.get_center_freq(0)*1e-6),
 				channels = tb.fftSize,
-				resolution = (tb.samp_rate/tb.fftSize)/1e3,
-				gain = tb.gain,
+				resolution = str((tb.usrp.get_samp_rate()/tb.fftSize)*1e-3),
+				window = 'Blackman-Harris',
+				gain = str(tb.usrp.get_gain(0)),
 				switch_freq = 1/float(1.1),
 				clock_rate = tb.usrp.get_clock_rate(0)/1e6,
-				samp_rate = tb.samp_rate/1e6,
+				samp_rate = str(tb.usrp.get_samp_rate()*1e-6),
 				clock_source = tb.usrp.get_clock_source(0),
 				time_source = tb.usrp.get_time_source(0),
+				port = 8081,
 			))
 
 		#Aborting measurement

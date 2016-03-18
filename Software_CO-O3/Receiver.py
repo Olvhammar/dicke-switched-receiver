@@ -23,7 +23,7 @@ import threading
 ##########RECEIVER###########
 class Receiver(gr.top_block):
     
-    def __init__(self, fftsize, samp_rate, gain, c_freq):
+    def __init__(self, fftsize, samp_rate, gain, c_freq, windows):
 		gr.top_block.__init__(self, "CalculateFFT")
         
 		#Class variables
@@ -37,6 +37,21 @@ class Receiver(gr.top_block):
 		self.N = 100 #100
 		self.probe_var = probe_var = 0
 		
+		blackman_harris = window.blackmanharris(self.fftsize)
+		hanning = window.hanning(self.fftsize)
+		rectangular = window.rectangular(self.fftsize)
+		self.window = blackman_harris #Default window
+		self.select_window = windows
+		
+		###Selectable FFT Windows###
+		if self.select_window == "blackman-harris":
+			self.window = blackman_harris
+		elif self.select_window == "hanning":	
+			self.window = hanning
+		elif self.select_window == "rectangular":
+			self.window = rectangular
+			
+		
 		########## GNURADIO BLOCKS #########
 		####################################
 		self.uhd_usrp_source_0 = uhd.usrp_source(
@@ -46,7 +61,7 @@ class Receiver(gr.top_block):
 				channels=range(1),
 			),
         )
-        #Configure USRP
+        #Configure USRP channel 0
 		self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
 		self.uhd_usrp_source_0.set_center_freq(self.c_freq, 0)
 		self.uhd_usrp_source_0.set_gain(self.gain, 0)
@@ -69,7 +84,7 @@ class Receiver(gr.top_block):
         )
 		self.blocks_null_sink = blocks.null_sink(gr.sizeof_float*1)
 		self.single_pole_iir_filter_xx_0 = filter.single_pole_iir_filter_ff(self.alpha, self.fftsize)
-		self.fft_vxx_0 = fft.fft_vcc(self.fftsize, True, (window.blackmanharris(self.fftsize)), True, 1)
+		self.fft_vxx_0 = fft.fft_vcc(self.fftsize, True, (self.window), True, 1)
 		self.blocks_vector_to_stream_0 = blocks.vector_to_stream(gr.sizeof_float*1, self.fftsize)
 		self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, self.fftsize)
 		self.blocks_keep_one_in_n_0 = blocks.keep_one_in_n(gr.sizeof_float*self.fftsize, self.N)
