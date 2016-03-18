@@ -161,12 +161,15 @@ class Measurement:
 		try:
 			os.remove('/tmp/ramdisk/dump1')
 			os.remove('/tmp/ramdisk/dump2')
+			os.remove('/tmp/ramdisk/dump3')
+			os.remove('/tmp/ramdisk/dump4')
 		except OSError:
 			pass
 		
 		self.date = ephem.now().tuple()
 		self.receiver.lock()
-		self.receiver.signal_file_sink_1.open("/tmp/ramdisk/totPow")
+		self.receiver.signal_file_sink_1.open("/tmp/ramdisk/totPow0")
+		self.receiver.signal_file_sink_3.open("/tmp/ramdisk/totPow1")
 		self.receiver.unlock()
 		print self.measureTimeTotPow
 		t_end = time.time() + self.measureTimeTotPow
@@ -175,9 +178,11 @@ class Measurement:
 			if int(self.config.get('CTRL','abort')) == 1:
 				break
 			self.receiver.blks2_selector_0.set_output_index(1) #Stream to signal sink
+			self.receiver.blks2_selector_1.set_output_index(1)
 		end = time.time()
 		self.totpowTime += end-start
 		self.receiver.blks2_selector_0.set_output_index(0) #Null sink, shouldnt be necessary but just in case
+		self.receiver.blks2_selector_1.set_output_index(1)
 		self.receiver.lock()
 		self.receiver.signal_file_sink_1.close()
 		self.receiver.unlock()
