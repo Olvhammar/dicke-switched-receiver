@@ -182,9 +182,10 @@ class Measurement:
 		end = time.time()
 		self.totpowTime += end-start
 		self.receiver.blks2_selector_0.set_output_index(0) #Null sink, shouldnt be necessary but just in case
-		self.receiver.blks2_selector_1.set_output_index(1)
+		self.receiver.blks2_selector_1.set_output_index(0)
 		self.receiver.lock()
 		self.receiver.signal_file_sink_1.close()
+		self.receiver.signal_file_sink_3.close()
 		self.receiver.unlock()
 		
 	#Measure and collect FFT files, Dicke-switched
@@ -207,30 +208,36 @@ class Measurement:
 		self.refCount = 1
 		#First sig/ref file sink
 		self.receiver.lock()
-		self.receiver.signal_file_sink_1.open("/tmp/ramdisk/sig0" + self.index)
-		self.receiver.signal_file_sink_2.open("/tmp/ramdisk/ref0" + self.index)
+		self.receiver.signal_file_sink_1.open("/tmp/ramdisk/sig0_0" + self.index) #Channel 0
+		self.receiver.signal_file_sink_2.open("/tmp/ramdisk/ref0_0" + self.index)
+		self.receiver.signal_file_sink_3.open("/tmp/ramdisk/sig1_0" + self.index) #Channel 1
+		self.receiver.signal_file_sink_4.open("/tmp/ramdisk/ref1_0" + self.index)
 		self.receiver.unlock()
 		countTwo = 0
 		while countTwo == 0:
-			if self.usrp.get_gpio_attr("FP0", "READBACK", 0) == S: #Stream to sig sink if datavalid = 1 and SR = 1
+			if S == S: #Stream to sig sink if datavalid = 1 and SR = 1
 				countTwo = 1
 				t_end = time.time() + self.measureTime
 				while time.time() <= t_end:
 					if int(self.config.get('CTRL','abort')) == 1:
 						break
-					elif self.usrp.get_gpio_attr("FP0", "READBACK", 0) == S:
+					elif S == S:
 						time.sleep(2e-3) #Blanking for GnuRadio delay
 						start1 = time.time()
 						self.receiver.blks2_selector_0.set_output_index(1) #Stream to signal sink
-						while self.usrp.get_gpio_attr("FP0", "READBACK", 0) == S: #File sink closes if Datavalid = 0
+						self.receiver.blks2_selector_1.set_output_index(1)
+						while S == S and int(self.config.get('CTRL','abort')) != 1: #File sink closes if Datavalid = 0
 							continue
 						stop1 = time.time()
 						self.sig_time += stop1-start1
 						print 'sig'
-						self.receiver.blks2_selector_0.set_output_index(0) #Null sink, shouldnt be necessary but just in case
+						self.receiver.blks2_selector_0.set_output_index(0)
+						self.receiver.blks2_selector_1.set_output_index(0) #Null sink, shouldnt be necessary but just in case
 						self.receiver.lock()
 						self.receiver.signal_file_sink_1.close()
-						self.receiver.signal_file_sink_1.open("/tmp/ramdisk/sig" + str(self.sigCount) + self.index)
+						self.receiver.signal_file_sink_1.open("/tmp/ramdisk/sig0_" + str(self.sigCount) + self.index)
+						self.receiver.signal_file_sink_3.close()
+						self.receiver.signal_file_sink_3.open("/tmp/ramdisk/sig1_" + str(self.sigCount) + self.index)
 						self.receiver.unlock()
 						self.sigCount += 1
 						while self.usrp.get_gpio_attr("FP0", "READBACK", 0) == SN or self.usrp.get_gpio_attr("FP0", "READBACK") == RN:
@@ -238,16 +245,20 @@ class Measurement:
 					elif self.usrp.get_gpio_attr("FP0", "READBACK") == R:
 						time.sleep(2e-3)
 						start2 = time.time()
-						self.receiver.blks2_selector_0.set_output_index(2) # Stream to reference sink
-						while self.usrp.get_gpio_attr("FP0", "READBACK", 0) == R: #Close file sink datavalid = 0
+						self.receiver.blks2_selector_0.set_output_index(2)
+						self.receiver.blks2_selector_1.set_output_index(2) # Stream to reference sink
+						while self.usrp.get_gpio_attr("FP0", "READBACK", 0) == R and int(self.config.get('CTRL','abort')) != 1: #Close file sink datavalid = 0
 							continue
 						stop2 = time.time()
 						self.ref_time += stop2-start2
 						print 'ref'
-						self.receiver.blks2_selector_0.set_output_index(0) #Null sink
+						self.receiver.blks2_selector_0.set_output_index(0)
+						self.receiver.blks2_selector_1.set_output_index(0) #Null sink
 						self.receiver.lock()
 						self.receiver.signal_file_sink_2.close()
-						self.receiver.signal_file_sink_2.open("/tmp/ramdisk/ref" + str(self.refCount) + self.index)
+						self.receiver.signal_file_sink_2.open("/tmp/ramdisk/ref0_" + str(self.refCount) + self.index)
+						self.receiver.signal_file_sink_4.close()
+						self.receiver.signal_file_sink_4.open("/tmp/ramdisk/ref1_" + str(self.refCount) + self.index)
 						self.receiver.unlock()
 						self.refCount += 1
 						while self.usrp.get_gpio_attr("FP0", "READBACK", 0) == RN or self.usrp.get_gpio_attr("FP0", "READBACK") == SN:

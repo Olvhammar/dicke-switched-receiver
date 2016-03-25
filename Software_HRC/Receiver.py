@@ -73,7 +73,6 @@ class Receiver(gr.top_block):
 		
 		#Configure USRP channel 1
 		self.uhd_usrp_source_0.set_antenna("RX2", 1)
-		self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
 		self.uhd_usrp_source_0.set_center_freq(self.c_freq, 1)
 		self.uhd_usrp_source_0.set_gain(self.gain, 1)
 		self.uhd_usrp_source_0.set_bandwidth(self.samp_rate, 1)
@@ -202,45 +201,10 @@ class Receiver(gr.top_block):
 		_probe_var_thread_1 = threading.Thread(target=_probe_var_probe_1)
 		_probe_var_thread_1.daemon = True
 		_probe_var_thread_1.start()
-		
-		
-    def get_samp_rate(self):
-        return self.samp_rate
-
-    def set_samp_rate(self, samp_rate):
-        self.samp_rate = samp_rate
-        analog_sig_source.set_sampling_freq(self.samp_rate)
-        throttle_0.set_sample_rate(self.samp_rate)
-
-    def get_int_time(self):
-        return self.int_time
-
-    def set_int_time(self, int_time):
-        self.int_time = int_time
-        blocks_head_0.set_length(int(self.int_time*self.samp_rate))
-
-    def get_gain(self):
-        return self.gain
-
-    def set_gain(self, gain):
-        self.gain = gain
-
-    def get_fftsize(self):
-        return self.fftsize
-
-    def set_fftsize(self, fftsize):
-        self.fftsize = fftsize
-    
-    def get_c_freq(self):
-        return self.c_freq
-
-    def set_c_freq(self, c_freq):
-        self.c_freq = c_freq
-        self.uhd_usrp_source_0.set_center_freq(self.c_freq, 0)
-        
-    def get_probe_var(self):
-        return self.probe_var
-
-    def set_probe_var(self, probe_var):
-        self.probe_var = probe_var
-
+	
+if __name__ == '__main__':
+	parser = OptionParser(option_class=eng_option, usage="%prog: [options]")
+	(options, args) = parser.parse_args()
+	tb = Receiver()
+	tb.start()
+	tb.wait()

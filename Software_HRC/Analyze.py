@@ -33,42 +33,70 @@ class Analyze():
 
 	#Analyze data
 	def analyze(self):
-		self.sigList = []
-		self.refList = []
+		self.sigList0 = []
+		self.refList0 = []
+		
+		self.sigList1 = []
+		self.refList1 = []
 
 		for i in range(self.sigCount):
-			item = "/tmp/ramdisk/sig" + str(i) + self.index
-			self.sigList.append(item)
+			item = "/tmp/ramdisk/sig0_" + str(i) + self.index
+			item = "/tmp/ramdisk/sig1_" + str(i) + self.index
+			self.sigList0.append(item)
+			self.sigList1.append(item)
+			
 		for i in range(self.refCount):
-			item = "/tmp/ramdisk/ref" + str(i) + self.index
-			self.refList.append(item)
+			item = "/tmp/ramdisk/ref0_" + str(i) + self.index
+			item = "/tmp/ramdisk/ref1_" + str(i) + self.index
+			self.refList0.append(item)
+			self.refList1.append(item)
 		
 		#If first file to small (the loop sometimes enter at late switch state) remove it
-		if os.path.getsize('/tmp/ramdisk/sig0' + self.index) == 0:
-			self.sigList.remove('/tmp/ramdisk/sig0' + self.index)
-			self.refList.remove('/tmp/ramdisk/ref0' + self.index)
+		if os.path.getsize('/tmp/ramdisk/sig0_0' + self.index) == 0:
+			self.sigList0.remove('/tmp/ramdisk/sig0_0' + self.index)
+			self.refList0.remove('/tmp/ramdisk/ref0_0' + self.index)
+			self.sigList1.remove('/tmp/ramdisk/sig1_0' + self.index)
+			self.refList1.remove('/tmp/ramdisk/ref1_0' + self.index)
 		
 		#Stack all the data
-		self.sig_spec = self.stack_all_data(self.sigList)
-		self.ref_spec = self.stack_all_data(self.refList)
+		self.sig_spec_0 = self.stack_all_data(self.sigList0)
+		self.ref_spec_0 = self.stack_all_data(self.refList0)
+		
+		self.sig_spec_1 = self.stack_all_data(self.sigList1)
+		self.ref_spec_1 = self.stack_all_data(self.refList1)
 		
 		#Calculates mean value for all signal and reference data
-		self.SIG_data = self.mean(self.sig_spec)
-		self.REF_data = self.mean(self.ref_spec)
+		self.SIG_data_0 = self.mean(self.sig_spec_0)
+		self.REF_data_0 = self.mean(self.ref_spec_0)
+		self.SIG_data_1 = self.mean(self.sig_spec_1)
+		self.REF_data_1 = self.mean(self.ref_spec_1)
 		
 		#Performs (Signal-Reference)
-		self.SRR_data = (self.SIG_data-self.REF_data)/(self.REF_data)
-		self.SR_data = self.SIG_data - self.REF_data
-
-		self.tex1 = '/home/' + self.user + '/Documents/SR' + self.index + '.npy'
-		self.tex2 = '/home/' + self.user + '/Documents/SRR' + self.index + '.npy'
-		self.tex3 = '/home/' + self.user + '/Documents/SIG' + self.index + '.npy'
-		self.tex4 = '/home/' + self.user + '/Documents/REF' + self.index + '.npy'
+		self.SRR_data_0 = (self.SIG_data_0-self.REF_data_0)/(self.REF_data_0)
+		self.SR_data_0 = self.SIG_data_0 - self.REF_data_0
 		
-		np.save(self.tex1, self.SR_data)
-		np.save(self.tex2, self.SRR_data)
-		np.save(self.tex3, self.SIG_data)
-		np.save(self.tex4, self.REF_data)
+		self.SRR_data_1 = (self.SIG_data_1-self.REF_data_1)/(self.REF_data_1)
+		self.SR_data_1 = self.SIG_data_1 - self.REF_data_1
+
+		self.tex1 = '/home/' + self.user + '/Documents/SR0_' + self.index + '.npy'
+		self.tex2 = '/home/' + self.user + '/Documents/SRR0_' + self.index + '.npy'
+		self.tex3 = '/home/' + self.user + '/Documents/SIG0_' + self.index + '.npy'
+		self.tex4 = '/home/' + self.user + '/Documents/REF0_' + self.index + '.npy'
+		
+		self.tex5 = '/home/' + self.user + '/Documents/SR1_' + self.index + '.npy'
+		self.tex6 = '/home/' + self.user + '/Documents/SRR1_' + self.index + '.npy'
+		self.tex7 = '/home/' + self.user + '/Documents/SIG1_' + self.index + '.npy'
+		self.tex8 = '/home/' + self.user + '/Documents/REF1_' + self.index + '.npy'
+		
+		np.save(self.tex1, self.SR_data_0)
+		np.save(self.tex2, self.SRR_data_0)
+		np.save(self.tex3, self.SIG_data_0)
+		np.save(self.tex4, self.REF_data_0)
+		
+		np.save(self.tex5, self.SR_data_1)
+		np.save(self.tex6, self.SRR_data_1)
+		np.save(self.tex7, self.SIG_data_1)
+		np.save(self.tex8, self.REF_data_1)
 		#Clear temporary files
 		files = glob.glob('/tmp/ramdisk/*')
 		for f in files:

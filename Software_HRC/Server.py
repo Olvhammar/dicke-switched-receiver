@@ -42,6 +42,7 @@ read_sig_ref = 'meas:read:sr?'
 
 #Create socket server and bind to local host and port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, True)
 print 'Socket created'
 try:
@@ -157,34 +158,38 @@ def clientthread(conn):
 		
 		elif command == conf_obs_time and value != -2:
 			obs_time = int(value)
-			lp = 5
-			tb.set_int_time(5)
-			if obs_time >= 30:
+			if obs_time >= 1000 and int(obs_time)%30 == 0:
 				lp = 30
 				tb.set_int_time(lp)
-				
-			if int(obs_time)%5 == 0:
 				loops = int(obs_time/(1*lp))
 				tb.set_loops(loops)
+				print "Number of loops"
+				print loops
+				config.set('CTRL','obs_time', str(int(obs_time)))
+				with open(configfil, 'wb') as configfile:
+					config.write(configfile)
+				conn.send('OK - {0} {1}\n'.format(command, obs_time))
+			elif obs_time < 1000:
+				tb.set_loops(1)
+				tb.set_int_time(obs_time)
 				tb.set_time_totPow(obs_time)
 				config.set('CTRL','obs_time', str(int(obs_time)))
 				with open(configfil, 'wb') as configfile:
 					config.write(configfile)
 				conn.send('OK - {0} {1}\n'.format(command, obs_time))
-				print loops
 			else:
 				conn.send('ERROR Bad integration time - conf:time:obs ' + str(obs_time) + '\n')
 				
 		elif command == conf_bandwidth and value != -2:
 			samp_rate = value
-			#if int(samp_rate) == 120 or int(samp_rate) == 60 or int(samp_rate) == 30 or int(samp_rate) == 20:
-			tb.set_samp_rate(samp_rate)
-			config.set('USRP','bw', str(tb.usrp.get_samp_rate()*1e-6))
-			with open(configfil, 'wb') as configfile:
-				config.write(configfile)
-			conn.send('OK - conf:usrp:bw ' + str(tb.usrp.get_samp_rate()*1e-6) + ' [MHz]\n')
-			#else:
-			#	conn.send('ERROR Bad bandwidth - conf:usrp:bw ' + samp_rate + '\n')
+			if int(samp_rate) <= 50:
+				tb.set_samp_rate(samp_rate)
+				config.set('USRP','bw', str(tb.usrp.get_samp_rate()*1e-6))
+				with open(configfil, 'wb') as configfile:
+					config.write(configfile)
+				conn.send('OK - conf:usrp:bw ' + str(tb.usrp.get_samp_rate()*1e-6) + ' [MHz]\n')
+			else:
+				conn.send('ERROR Bad bandwidth - conf:usrp:bw ' + samp_rate + '\n')
 		elif command == conf_channels and value != -2:
 			channels = value
 			if int(channels) == 8192 or int(channels) == 4096  or int(channels) == 2048 or int(channels) == 1024 or int(channels) == 512 or int(channels) == 256 or int(channels) == 128:
