@@ -72,15 +72,22 @@ class Finalize():
 		
 			print "Done\n"
 		else:
-			self.totPow_data = np.zeros(self.fftSize, dtype = np.float32)
-		
-			self.totPow_data += np.load('/home/' + self.user + '/Documents/totPow' + '.npy')
-			os.remove('/home/' + self.user + '/Documents/totPow' +'.npy')
-				
-			self.create_fits_file(self.totPow_data, "TotPow", self.totPowTime)
-			np.save('/home/' + self.user + '/totPowFin.npy', self.totPow_data)
-			shutil.copy('/home/' + self.user + '/Documents/TotPow.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/TotPow.fits')
-			os.remove('/home/' + self.user + '/Documents/TotPow.fits')
+			self.totPow0_data = np.zeros(self.fftSize, dtype = np.float32)
+			self.totPow1_data = np.zeros(self.fftSize, dtype = np.float32)
+
+			self.totPow0_data += np.load('/home/' + self.user + '/Documents/totPow0' + '.npy')
+			self.totPow1_data += np.load('/home/' + self.user + '/Documents/totPow1' + '.npy')
+			os.remove('/home/' + self.user + '/Documents/totPow0' +'.npy')
+			os.remove('/home/' + self.user + '/Documents/totPow1' +'.npy')
+
+			self.create_fits_file(self.totPow0_data, "TotPow0", self.totPowTime)
+			self.create_fits_file(self.totPow1_data, "TotPow1", self.totPowTime)
+			
+			shutil.copy('/home/' + self.user + '/Documents/TotPow0.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/TotPow0.fits')
+			os.remove('/home/' + self.user + '/Documents/TotPow0.fits')
+			
+			shutil.copy('/home/' + self.user + '/Documents/TotPow1.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/TotPow1.fits')
+			os.remove('/home/' + self.user + '/Documents/TotPow1.fits')
 			
 			print "Total Power Measurement Done \n"
 				

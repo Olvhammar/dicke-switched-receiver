@@ -80,9 +80,12 @@ class Analyze():
 	def analyze_TotPow(self):
 		
 		#Average totalpower spectrum
-		self.totPow_spec = self.stack_FFT_file("/tmp/ramdisk/totPow")
-		self.tex = '/home/' + self.user + '/Documents/totPow' + '.npy'
-		np.save(self.tex, self.totPow_spec)
+		self.totPow_spec_0 = self.stack_FFT_file("/tmp/ramdisk/totPow0")
+		self.totPow_spec_1 = self.stack_FFT_file("/tmp/ramdisk/totPow1")
+		self.tex_0 = '/home/' + self.user + '/Documents/totPow0' + '.npy'
+		self.tex_1 = '/home/' + self.user + '/Documents/totPow1' + '.npy'
+		np.save(self.tex_0, self.totPow_spec_0)
+		np.save(self.tex_1, self.totPow_spec_1)
 		
 		#Clear temporary files
 		files = glob.glob('/tmp/ramdisk/*')
