@@ -40,20 +40,6 @@ class Receiver(gr.top_block):
 		self.probe_var = probe_var = 0
 		self.probe_var_1 = probe_var_1 = 0
 		
-		blackman_harris = window.blackmanharris(self.fftsize)
-		hanning = window.hanning(self.fftsize)
-		rectangular = window.rectangular(self.fftsize)
-		self.window = blackman_harris #Default window
-		self.select_window = windows
-		
-		###Selectable FFT Windows###
-		if self.select_window == "blackman-harris":
-			self.window = blackman_harris
-		elif self.select_window == "hanning":
-			self.window = hanning
-		elif self.select_window == "rectangular":
-			self.window = rectangular
-			
 		########## GNURADIO BLOCKS #########
 		####################################
 		self.uhd_usrp_source_0 = uhd.usrp_source(
@@ -68,16 +54,15 @@ class Receiver(gr.top_block):
 		self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
 		self.uhd_usrp_source_0.set_center_freq(self.c_freq, 0)
 		self.uhd_usrp_source_0.set_gain(self.gain, 0)
-		self.uhd_usrp_source_0.set_bandwidth(self.samp_rate, 0)
+		#self.uhd_usrp_source_0.set_bandwidth(self.samp_rate, 0)
 		#self.uhd_usrp_source_0.set_clock_source('internal', 0)
 		
 		#Configure USRP channel 1
 		self.uhd_usrp_source_0.set_antenna("RX2", 1)
 		self.uhd_usrp_source_0.set_center_freq(self.c_freq, 1)
 		self.uhd_usrp_source_0.set_gain(self.gain, 1)
-		self.uhd_usrp_source_0.set_bandwidth(self.samp_rate, 1)
+		#self.uhd_usrp_source_0.set_bandwidth(self.samp_rate, 1)
 		#self.uhd_usrp_source_0.set_clock_source('internal', 1)
-		
 		
 		#Signal and reference file sinks channel 0
 		self.signal_file_sink_1 = blocks.file_sink(gr.sizeof_float*1, self.dump1, False)
@@ -91,7 +76,6 @@ class Receiver(gr.top_block):
 		self.signal_file_sink_4 = blocks.file_sink(gr.sizeof_float*1, self.dump4, False)
 		self.signal_file_sink_4.set_unbuffered(False)
 		
-	
 		#Selector for GPIO switch channel 0
 		self.blks2_selector_0 = grc_blks2.selector(
 			item_size=gr.sizeof_float*1,
@@ -100,7 +84,6 @@ class Receiver(gr.top_block):
 			input_index=0,
 			output_index=0,
 		)
-        
         #Selector for GPIO switch channel 1
 		self.blks2_selector_1 = grc_blks2.selector(
 			item_size=gr.sizeof_float*1,
@@ -113,16 +96,15 @@ class Receiver(gr.top_block):
         #Div blocks channel 0
 		self.blocks_null_sink = blocks.null_sink(gr.sizeof_float*1)
 		self.single_pole_iir_filter_xx_0 = filter.single_pole_iir_filter_ff(self.alpha, self.fftsize)
-		self.fft_vxx_0 = fft.fft_vcc(self.fftsize, True, (self.window), True, 1)
+		self.fft_vxx_0 = fft.fft_vcc(self.fftsize, True, (window.blackmanharris(self.fftsize)), True, 1) #Last argument threads, 1 default
 		self.blocks_vector_to_stream_0 = blocks.vector_to_stream(gr.sizeof_float*1, self.fftsize)
 		self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, self.fftsize)
 		self.blocks_keep_one_in_n_0 = blocks.keep_one_in_n(gr.sizeof_float*self.fftsize, self.N)
 		self.blocks_complex_to_mag_squared_0 = blocks.complex_to_mag_squared(self.fftsize)
-		
 		#Div blocks channel 1
 		self.blocks_null_sink_1 = blocks.null_sink(gr.sizeof_float*1)
 		self.single_pole_iir_filter_xx_1 = filter.single_pole_iir_filter_ff(self.alpha, self.fftsize)
-		self.fft_vxx_1 = fft.fft_vcc(self.fftsize, True, (self.window), True, 1)
+		self.fft_vxx_1 = fft.fft_vcc(self.fftsize, True, (window.blackmanharris(self.fftsize)), True, 1)
 		self.blocks_vector_to_stream_1 = blocks.vector_to_stream(gr.sizeof_float*1, self.fftsize)
 		self.blocks_stream_to_vector_1 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, self.fftsize)
 		self.blocks_keep_one_in_n_1 = blocks.keep_one_in_n(gr.sizeof_float*self.fftsize, self.N)
@@ -161,50 +143,51 @@ class Receiver(gr.top_block):
 		self.connect((self.blks2_selector_1, 0), (self.blocks_null_sink_1, 0))
 		
 		#########PROBE SAMPLES channel 0##########
-		self.probe_signal = blocks.probe_signal_f()
-		self.blocks_complex_to_mag_0 = blocks.complex_to_mag(1)
+		#self.probe_signal = blocks.probe_signal_f()
+		#self.blocks_complex_to_mag_0 = blocks.complex_to_mag(1)
 		
-		self.connect((self.blocks_complex_to_mag_0, 0), (self.probe_signal, 0))    
-		self.connect((self.uhd_usrp_source_0, 0), (self.blocks_complex_to_mag_0, 0))
+		#self.connect((self.blocks_complex_to_mag_0, 0), (self.probe_signal, 0))    
+		#self.connect((self.uhd_usrp_source_0, 0), (self.blocks_complex_to_mag_0, 0))
 		
 		#Probe update rate
-		def _probe_var_probe():
-			while True:
-				val = self.probe_signal.level()
-				try:
-					self.set_probe_var(val)
-				except AttributeError:
-					pass
-				time.sleep(10 / (self.samp_rate)) #Update probe variabel every 10/samp_rate seconds
+		#def _probe_var_probe():
+		#	while True:
+		#		val = self.probe_signal.level()
+		#		try:
+		#			self.set_probe_var(val)
+		#		except AttributeError:
+		#			pass
+		#		time.sleep(10 / (self.samp_rate)) #Update probe variabel every 10/samp_rate seconds
 
-		_probe_var_thread = threading.Thread(target=_probe_var_probe)
-		_probe_var_thread.daemon = True
-		_probe_var_thread.start()
+		#_probe_var_thread = threading.Thread(target=_probe_var_probe)
+		#_probe_var_thread.daemon = True
+		#_probe_var_thread.start()
 		
 		#########PROBE SAMPLES channel 1##########
-		self.probe_signal_1 = blocks.probe_signal_f()
-		self.blocks_complex_to_mag_1 = blocks.complex_to_mag(1)
+		#self.probe_signal_1 = blocks.probe_signal_f()
+		#self.blocks_complex_to_mag_1 = blocks.complex_to_mag(1)
 		
-		self.connect((self.blocks_complex_to_mag_1, 0), (self.probe_signal_1, 0))    
-		self.connect((self.uhd_usrp_source_0, 1), (self.blocks_complex_to_mag_1, 0))
+		#self.connect((self.blocks_complex_to_mag_1, 0), (self.probe_signal_1, 0))    
+		#self.connect((self.uhd_usrp_source_0, 1), (self.blocks_complex_to_mag_1, 0))
 		
 		#Probe update rate
-		def _probe_var_probe_1():
-			while True:
-				val = self.probe_signal_1.level()
-				try:
-					self.set_probe_var_1(val)
-				except AttributeError:
-					pass
-				time.sleep(10 / (self.samp_rate)) #Update probe variabel every 10/samp_rate seconds
+		#def _probe_var_probe_1():
+		#	while True:
+		#		val = self.probe_signal_1.level()
+		#		try:
+		#			self.set_probe_var_1(val)
+		#		except AttributeError:
+		#			pass
+		#		time.sleep(10 / (self.samp_rate)) #Update probe variabel every 10/samp_rate seconds
 
-		_probe_var_thread_1 = threading.Thread(target=_probe_var_probe_1)
-		_probe_var_thread_1.daemon = True
-		_probe_var_thread_1.start()
-	
-if __name__ == '__main__':
-	parser = OptionParser(option_class=eng_option, usage="%prog: [options]")
-	(options, args) = parser.parse_args()
-	tb = Receiver()
-	tb.start()
-	tb.wait()
+		#_probe_var_thread_1 = threading.Thread(target=_probe_var_probe_1)
+		#_probe_var_thread_1.daemon = True
+		#_probe_var_thread_1.start()
+		
+#if __name__ == '__main__':
+#	parser = OptionParser(option_class=eng_option, usage="%prog: [options]")
+#	(options, args) = parser.parse_args()
+#	tb = Receiver()
+#	tb.start()
+#	tb.stop()
+#	tb.wait()

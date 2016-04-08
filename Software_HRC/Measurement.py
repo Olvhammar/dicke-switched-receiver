@@ -41,7 +41,6 @@ class Measurement:
 		
 		#Initate GnuRadio flowgraph
 		self.receiver = Receiver(self.fftSize, self.samp_rate, self.gain, self.c_freq, self.window)
-		
 		#Creates usrp object from receiver
 		self.usrp = self.receiver.uhd_usrp_source_0
 		
@@ -194,6 +193,8 @@ class Measurement:
 		try:
 			os.remove('/tmp/ramdisk/dump1')
 			os.remove('/tmp/ramdisk/dump2')
+			os.remove('/tmp/ramdisk/dump3')
+			os.remove('/tmp/ramdisk/dump4')
 		except OSError:
 			pass
 				
@@ -226,7 +227,7 @@ class Measurement:
 						start1 = time.time()
 						self.receiver.blks2_selector_0.set_output_index(1) #Stream to signal sink
 						self.receiver.blks2_selector_1.set_output_index(1)
-						while S == S and int(self.config.get('CTRL','abort')) != 1: #File sink closes if Datavalid = 0
+						while S == S and int(self.config.get('CTRL','abort')) != 1 and time.time() <= t_end: #File sink closes if Datavalid = 0
 							continue
 						stop1 = time.time()
 						self.sig_time += stop1-start1
@@ -235,13 +236,13 @@ class Measurement:
 						self.receiver.blks2_selector_1.set_output_index(0) #Null sink, shouldnt be necessary but just in case
 						self.receiver.lock()
 						self.receiver.signal_file_sink_1.close()
-						self.receiver.signal_file_sink_1.open("/tmp/ramdisk/sig0_" + str(self.sigCount) + self.index)
 						self.receiver.signal_file_sink_3.close()
+						self.receiver.signal_file_sink_1.open("/tmp/ramdisk/sig0_" + str(self.sigCount) + self.index)
 						self.receiver.signal_file_sink_3.open("/tmp/ramdisk/sig1_" + str(self.sigCount) + self.index)
 						self.receiver.unlock()
 						self.sigCount += 1
-						while self.usrp.get_gpio_attr("FP0", "READBACK", 0) == SN or self.usrp.get_gpio_attr("FP0", "READBACK") == RN:
-							continue
+						#while self.usrp.get_gpio_attr("FP0", "READBACK", 0) == SN or self.usrp.get_gpio_attr("FP0", "READBACK") == RN:
+						#	continue
 					elif self.usrp.get_gpio_attr("FP0", "READBACK") == R:
 						time.sleep(2e-3)
 						start2 = time.time()

@@ -158,7 +158,7 @@ def clientthread(conn):
 		
 		elif command == conf_obs_time and value != -2:
 			obs_time = int(value)
-			if obs_time >= 1000 and int(obs_time)%30 == 0:
+			if obs_time > 1000 and int(obs_time)%30 == 0:
 				lp = 30
 				tb.set_int_time(lp)
 				loops = int(obs_time/(1*lp))
@@ -169,7 +169,7 @@ def clientthread(conn):
 				with open(configfil, 'wb') as configfile:
 					config.write(configfile)
 				conn.send('OK - {0} {1}\n'.format(command, obs_time))
-			elif obs_time < 1000:
+			elif obs_time <= 1000:
 				tb.set_loops(1)
 				tb.set_int_time(obs_time)
 				tb.set_time_totPow(obs_time)
