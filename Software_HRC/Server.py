@@ -22,7 +22,7 @@ me = singleton.SingleInstance() #Makes sure only one instance is running
 #Change HOST to desired IP
 HOST = 'localhost'
 PORT = 8081
-user = "gnuradio-ffts" #Define username
+user = "olvhammar" #Define username
 configfil = "/home/" + user + "/GNURadio-FFTS/FFTS.config"
 config = ConfigParser.ConfigParser()
 config.read(configfil)
@@ -78,7 +78,7 @@ class Worker(Thread):
 		Thread.__init__(self)
 
 thread = Worker()
-thread.daemon = False
+thread.daemon = True
 
 def clientthread(conn):
 	while True:
@@ -158,9 +158,10 @@ def clientthread(conn):
 		
 		elif command == conf_obs_time and value != -2:
 			obs_time = int(value)
-			if obs_time > 1000 and int(obs_time)%30 == 0:
-				lp = 30
+			if obs_time > 1000 and int(obs_time)%60 == 0:
+				lp = 5
 				tb.set_int_time(lp)
+				tb.set_time_totPow(lp)
 				loops = int(obs_time/(1*lp))
 				tb.set_loops(loops)
 				print "Number of loops"

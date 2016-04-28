@@ -5,6 +5,8 @@
 from Receiver import *
 from Analyze import *
 from Finalize import *
+from gnuradio import gr
+from gnuradio import blocks
 import ephem
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,6 +18,7 @@ import glob
 import threading
 import astropy
 import ConfigParser
+import sys
 from astropy.io import fits
 
 class Measurement:
@@ -40,10 +43,10 @@ class Measurement:
 		self.window = window
 		
 		#Initate GnuRadio flowgraph
-		self.receiver = Receiver(self.fftSize, self.samp_rate, self.gain, self.c_freq, self.window)
+		self.receiver = Receiver(self.fftSize, self.samp_rate, self.gain, self.c_freq)
 		#Creates usrp object from receiver
 		self.usrp = self.receiver.uhd_usrp_source_0
-		
+		self.receiver.start()
 		######### GPIO INIT #########
 		#############################
 		num_bits = 11
@@ -64,7 +67,6 @@ class Measurement:
 		self.config.set('CTRL','state','adjusting')
 		with open(self.configfil, 'wb') as configfile:
 			self.config.write(configfile)
-		self.receiver.start()
 		timedat = 1 #Read samples for 1 second on current gain
 		gain = 18 #Gain start value
 		self.set_gain(gain)
@@ -100,8 +102,8 @@ class Measurement:
 				break
 		print "Final gain: "
 		print self.usrp.get_gain(0)
-		self.receiver.stop()
-		self.receiver.wait()
+		#self.receiver.stop()
+		#self.receiver.wait()
 		self.config.set('USRP','gain', str(self.usrp.get_gain(0)))
 		self.config.set('CTRL','state','ready')
 		with open(self.configfil, 'wb') as configfile:
@@ -114,7 +116,7 @@ class Measurement:
 			self.meas_adjust()
 		else:
 			self.date = ephem.now().tuple() #Date for FITS-file
-			self.receiver.start()
+			#self.receiver.start()
 			self.sig_time = 0
 			self.ref_time = 0
 			self.totpowTime = 0
@@ -126,10 +128,9 @@ class Measurement:
 			start = time.time()
 			while index < self.loops:
 				self.set_index(index)
-				if self.switched == 1:
+				if self.switched == 1 and int(self.config.get('CTRL','abort')) != 1:
 					self.measure_switch_in()
-				else:
-					self.loops = 1
+				elif self.switched != 1 and int(self.config.get('CTRL','abort')) != 1:
 					self.measure_tot_pow()
 					self.counter = 0
 					self.sigCount = 0
@@ -143,8 +144,6 @@ class Measurement:
 			edit = 0
 			if int(self.config.get('CTRL','abort')) != 1:
 				td = Finalize(index, self.fftSize, self.c_freq, self.samp_rate, edit, self.sig_time, self.ref_time, self.switched, self.totpowTime, self.user, self.date)
-			self.receiver.stop()
-			self.receiver.wait()
 			files = glob.glob('/tmp/ramdisk/*')
 			for f in files:
 				if f.endswith(self.index):
@@ -156,7 +155,6 @@ class Measurement:
 				self.config.write(configfile)
 				
 	def measure_tot_pow(self):
-		#If dumpfile exists remove it
 		try:
 			os.remove('/tmp/ramdisk/dump1')
 			os.remove('/tmp/ramdisk/dump2')
@@ -166,26 +164,19 @@ class Measurement:
 			pass
 		
 		self.date = ephem.now().tuple()
-		self.receiver.lock()
-		self.receiver.signal_file_sink_1.open("/tmp/ramdisk/totPow0")
-		self.receiver.signal_file_sink_3.open("/tmp/ramdisk/totPow1")
-		self.receiver.unlock()
+		self.receiver.signal_file_sink_1.open("/tmp/ramdisk/totPow0" + self.index)
+		self.receiver.signal_file_sink_3.open("/tmp/ramdisk/totPow1" + self.index)
+
 		print self.measureTimeTotPow
 		t_end = time.time() + self.measureTimeTotPow
 		start = time.time()
+		self.receiver.blks2_selector_0.set_output_index(1) #Stream to signal sink
+		self.receiver.blks2_selector_1.set_output_index(1)
 		while time.time() <= t_end:
 			if int(self.config.get('CTRL','abort')) == 1:
 				break
-			self.receiver.blks2_selector_0.set_output_index(1) #Stream to signal sink
-			self.receiver.blks2_selector_1.set_output_index(1)
 		end = time.time()
 		self.totpowTime += end-start
-		self.receiver.blks2_selector_0.set_output_index(0) #Null sink, shouldnt be necessary but just in case
-		self.receiver.blks2_selector_1.set_output_index(0)
-		self.receiver.lock()
-		self.receiver.signal_file_sink_1.close()
-		self.receiver.signal_file_sink_3.close()
-		self.receiver.unlock()
 		
 	#Measure and collect FFT files, Dicke-switched
 	def measure_switch_in(self):
@@ -197,23 +188,23 @@ class Measurement:
 			os.remove('/tmp/ramdisk/dump4')
 		except OSError:
 			pass
-				
 		#SR pin logic, observe that pin logic might vary with with FPGA image
 		S = int('00011',2)
 		R = int('00010',2)
 		#DV pin logic
 		SN = int('00001',2)
 		RN = int('00000',2)
-		
+		#self.receiver.start()
 		self.sigCount = 1
 		self.refCount = 1
 		#First sig/ref file sink
-		self.receiver.lock()
-		self.receiver.signal_file_sink_1.open("/tmp/ramdisk/sig0_0" + self.index) #Channel 0
-		self.receiver.signal_file_sink_2.open("/tmp/ramdisk/ref0_0" + self.index)
-		self.receiver.signal_file_sink_3.open("/tmp/ramdisk/sig1_0" + self.index) #Channel 1
-		self.receiver.signal_file_sink_4.open("/tmp/ramdisk/ref1_0" + self.index)
-		self.receiver.unlock()
+		if self.sigCount == 1:
+			self.receiver.signal_file_sink_1.open("/tmp/ramdisk/sig0_0" + self.index) #Channel 0
+			self.receiver.signal_file_sink_2.open("/tmp/ramdisk/ref0_0" + self.index)
+			self.receiver.signal_file_sink_3.open("/tmp/ramdisk/sig1_0" + self.index) #Channel 1
+			self.receiver.signal_file_sink_4.open("/tmp/ramdisk/ref1_0" + self.index)
+		else:
+			pass
 		countTwo = 0
 		while countTwo == 0:
 			if S == S: #Stream to sig sink if datavalid = 1 and SR = 1
@@ -233,13 +224,13 @@ class Measurement:
 						self.sig_time += stop1-start1
 						print 'sig'
 						self.receiver.blks2_selector_0.set_output_index(0)
-						self.receiver.blks2_selector_1.set_output_index(0) #Null sink, shouldnt be necessary but just in case
-						self.receiver.lock()
-						self.receiver.signal_file_sink_1.close()
-						self.receiver.signal_file_sink_3.close()
-						self.receiver.signal_file_sink_1.open("/tmp/ramdisk/sig0_" + str(self.sigCount) + self.index)
-						self.receiver.signal_file_sink_3.open("/tmp/ramdisk/sig1_" + str(self.sigCount) + self.index)
-						self.receiver.unlock()
+						self.receiver.blks2_selector_1.set_output_index(0)
+						#self.receiver.lock()
+						#self.receiver.signal_file_sink_1.close()
+						#self.receiver.signal_file_sink_3.close()
+						#self.receiver.signal_file_sink_1.open("/tmp/ramdisk/sig0_" + str(self.sigCount) + self.index)
+						#self.receiver.signal_file_sink_3.open("/tmp/ramdisk/sig1_" + str(self.sigCount) + self.index)
+						#self.receiver.unlock()
 						self.sigCount += 1
 						#while self.usrp.get_gpio_attr("FP0", "READBACK", 0) == SN or self.usrp.get_gpio_attr("FP0", "READBACK") == RN:
 						#	continue
@@ -264,6 +255,10 @@ class Measurement:
 						self.refCount += 1
 						while self.usrp.get_gpio_attr("FP0", "READBACK", 0) == RN or self.usrp.get_gpio_attr("FP0", "READBACK") == SN:
 							continue
+					else:
+						break
+		#self.receiver.stop()
+		#self.receiver.wait()
 
 	#Set integration time
 	def set_int_time(self, int_time):

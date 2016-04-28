@@ -4,6 +4,17 @@
 # Title: Calculates FFT, in stream averaging, probes and storage
 ##################################################
 
+if __name__ == '__main__':
+    import ctypes
+    import sys
+    if sys.platform.startswith('linux'):
+        try:
+            x11 = ctypes.cdll.LoadLibrary('libX11.so')
+            x11.XInitThreads()
+        except:
+            print "Warning: failed to XInitThreads()"
+            
+from PyQt4 import Qt
 from gnuradio import analog
 from gnuradio import blocks
 from gnuradio import eng_notation
@@ -19,12 +30,13 @@ from optparse import OptionParser
 import timeit
 import time
 import threading
+import sys
 
 ##########RECEIVER###########
-class Receiver(gr.top_block):
+class Receiver(gr.top_block, Qt.QWidget):
     
-    def __init__(self, fftsize, samp_rate, gain, c_freq, windows):
-		gr.top_block.__init__(self, "CalculateFFT")
+	def __init__(self, fftsize, samp_rate, gain, c_freq):
+		gr.top_block.__init__(self, "Receiver")
         
 		#Class variables
 		self.samp_rate = samp_rate
@@ -54,14 +66,14 @@ class Receiver(gr.top_block):
 		self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
 		self.uhd_usrp_source_0.set_center_freq(self.c_freq, 0)
 		self.uhd_usrp_source_0.set_gain(self.gain, 0)
-		#self.uhd_usrp_source_0.set_bandwidth(self.samp_rate, 0)
+		self.uhd_usrp_source_0.set_bandwidth(self.samp_rate, 0)
 		#self.uhd_usrp_source_0.set_clock_source('internal', 0)
 		
 		#Configure USRP channel 1
 		self.uhd_usrp_source_0.set_antenna("RX2", 1)
 		self.uhd_usrp_source_0.set_center_freq(self.c_freq, 1)
 		self.uhd_usrp_source_0.set_gain(self.gain, 1)
-		#self.uhd_usrp_source_0.set_bandwidth(self.samp_rate, 1)
+		self.uhd_usrp_source_0.set_bandwidth(self.samp_rate, 1)
 		#self.uhd_usrp_source_0.set_clock_source('internal', 1)
 		
 		#Signal and reference file sinks channel 0
@@ -80,7 +92,7 @@ class Receiver(gr.top_block):
 		self.blks2_selector_0 = grc_blks2.selector(
 			item_size=gr.sizeof_float*1,
 			num_inputs=1,
-			num_outputs=2+1, #+1 for the null sink
+			num_outputs=3, #+1 for the null sink
 			input_index=0,
 			output_index=0,
 		)
@@ -88,7 +100,7 @@ class Receiver(gr.top_block):
 		self.blks2_selector_1 = grc_blks2.selector(
 			item_size=gr.sizeof_float*1,
 			num_inputs=1,
-			num_outputs=2+1, #+1 for the null sink
+			num_outputs=3, #+1 for the null sink
 			input_index=0,
 			output_index=0,
 		)
@@ -111,36 +123,36 @@ class Receiver(gr.top_block):
 		self.blocks_complex_to_mag_squared_1 = blocks.complex_to_mag_squared(self.fftsize)
 	
 		#Block connections channel 0
-		self.connect((self.uhd_usrp_source_0, 0), (self.blocks_stream_to_vector_0, 0))
-		self.connect((self.blocks_stream_to_vector_0, 0), (self.fft_vxx_0, 0))
-		self.connect((self.fft_vxx_0, 0), (self.blocks_complex_to_mag_squared_0, 0))
-		self.connect((self.blocks_complex_to_mag_squared_0, 0), (self.single_pole_iir_filter_xx_0, 0))
-		self.connect((self.single_pole_iir_filter_xx_0, 0), (self.blocks_keep_one_in_n_0, 0))
-		self.connect((self.blocks_keep_one_in_n_0, 0), (self.blocks_vector_to_stream_0, 0))
-		self.connect((self.blocks_vector_to_stream_0, 0), (self.blks2_selector_0, 0))
+		self.connect((self.uhd_usrp_source_0, 0), self.blocks_stream_to_vector_0)
+		self.connect(self.blocks_stream_to_vector_0, self.fft_vxx_0)
+		self.connect(self.fft_vxx_0, self.blocks_complex_to_mag_squared_0)
+		self.connect(self.blocks_complex_to_mag_squared_0, self.single_pole_iir_filter_xx_0)
+		self.connect(self.single_pole_iir_filter_xx_0, self.blocks_keep_one_in_n_0)
+		self.connect(self.blocks_keep_one_in_n_0, self.blocks_vector_to_stream_0)
+		self.connect(self.blocks_vector_to_stream_0, self.blks2_selector_0)
 		
 		#Block connections channel 1
-		self.connect((self.uhd_usrp_source_0, 1), (self.blocks_stream_to_vector_1, 0))
-		self.connect((self.blocks_stream_to_vector_1, 0), (self.fft_vxx_1, 0))
-		self.connect((self.fft_vxx_1, 0), (self.blocks_complex_to_mag_squared_1, 0))
-		self.connect((self.blocks_complex_to_mag_squared_1, 0), (self.single_pole_iir_filter_xx_1, 0))
-		self.connect((self.single_pole_iir_filter_xx_1, 0), (self.blocks_keep_one_in_n_1, 0))
-		self.connect((self.blocks_keep_one_in_n_1, 0), (self.blocks_vector_to_stream_1, 0))
-		self.connect((self.blocks_vector_to_stream_1, 0), (self.blks2_selector_1, 0))
+		self.connect((self.uhd_usrp_source_0, 1), self.blocks_stream_to_vector_1)
+		self.connect(self.blocks_stream_to_vector_1, self.fft_vxx_1)
+		self.connect(self.fft_vxx_1, self.blocks_complex_to_mag_squared_1)
+		self.connect(self.blocks_complex_to_mag_squared_1, self.single_pole_iir_filter_xx_1)
+		self.connect(self.single_pole_iir_filter_xx_1, self.blocks_keep_one_in_n_1)
+		self.connect(self.blocks_keep_one_in_n_1, self.blocks_vector_to_stream_1)
+		self.connect(self.blocks_vector_to_stream_1, self.blks2_selector_1)
 		
 		#Selector connections channel 0
-		self.connect((self.blks2_selector_0, 1), (self.signal_file_sink_1, 0))
-		self.connect((self.blks2_selector_0, 2), (self.signal_file_sink_2, 0))
+		self.connect((self.blks2_selector_0, 1), self.signal_file_sink_1)
+		self.connect((self.blks2_selector_0, 2), self.signal_file_sink_2)
 		
 		#Selector connections channel 1
-		self.connect((self.blks2_selector_1, 1), (self.signal_file_sink_3, 0))
-		self.connect((self.blks2_selector_1, 2), (self.signal_file_sink_4, 0))
+		self.connect((self.blks2_selector_1, 1), self.signal_file_sink_3)
+		self.connect((self.blks2_selector_1, 2), self.signal_file_sink_4)
 		
 		#Null sink connection channel 0
-		self.connect((self.blks2_selector_0, 0), (self.blocks_null_sink, 0))
+		self.connect((self.blks2_selector_0, 0), self.blocks_null_sink)
 		
 		#Null sink connection channel 1
-		self.connect((self.blks2_selector_1, 0), (self.blocks_null_sink_1, 0))
+		self.connect((self.blks2_selector_1, 0), self.blocks_null_sink_1)
 		
 		#########PROBE SAMPLES channel 0##########
 		#self.probe_signal = blocks.probe_signal_f()
@@ -183,11 +195,17 @@ class Receiver(gr.top_block):
 		#_probe_var_thread_1 = threading.Thread(target=_probe_var_probe_1)
 		#_probe_var_thread_1.daemon = True
 		#_probe_var_thread_1.start()
-		
-#if __name__ == '__main__':
-#	parser = OptionParser(option_class=eng_option, usage="%prog: [options]")
-#	(options, args) = parser.parse_args()
-#	tb = Receiver()
-#	tb.start()
-#	tb.stop()
-#	tb.wait()
+	
+	def get_samp_rate(self):
+		return self.samp_rate
+
+	def set_samp_rate(self, samp_rate):
+		self.samp_rate = samp_rate
+		self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
+
+	def get_fft_size(self):
+		return self.fftsize
+
+	def set_fft_size(self, fft_size):
+		self.fftsize = fftsize
+	
