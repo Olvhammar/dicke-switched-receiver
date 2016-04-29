@@ -61,15 +61,15 @@ class Measurement:
 		self.loops = loops
 		
 	#Set optimal gain to utilize full dynamic range of ADC
-	def meas_adjust(self):
+	def meas_adjust(self, channel):
 		histData = []
 		print "Adjusting gain"
 		self.config.set('CTRL','state','adjusting')
 		with open(self.configfil, 'wb') as configfile:
 			self.config.write(configfile)
 		timedat = 1 #Read samples for 1 second on current gain
-		gain = 18 #Gain start value
-		self.set_gain(gain)
+		gain = 15 #Gain start value
+		self.set_gain(gain, channel)
 		while gain < 31 and gain != -1:
 			print gain
 			L = []
@@ -78,7 +78,10 @@ class Measurement:
 			end = time.time() + timedat
 			while time.time() <= end:
 				time.sleep(10 / (self.samp_rate))
-				L.append(self.receiver.get_probe_var())
+				if channel == 0:
+					L.append(self.receiver.get_probe_var())
+				else
+					L.append(self.receiver.get_probe_var_1())
 			for i in L:
 				if i > 0.5:
 					L1.append(i)
@@ -88,8 +91,9 @@ class Measurement:
 			print (len(L1)/float(hundra))
 			if (len(L1)/float(hundra)) < 0.05: #As long as the samples above the value 0.5 are under 5% of all collected samples continue to increase gain
 				gain += 1
-				self.set_gain(gain)
-				print self.usrp.get_gain(0)
+				self.set_gain(gain, channel)
+				print "Set gain on channel: " + channel
+				print self.usrp.get_gain(channel)
 				del L, L1, L2
 			elif gain == 30:
 				histData = L
@@ -100,23 +104,21 @@ class Measurement:
 				i = -1
 				del L, L1, L2
 				break
-		print "Final gain: "
-		print self.usrp.get_gain(0)
-		#self.receiver.stop()
-		#self.receiver.wait()
-		self.config.set('USRP','gain', str(self.usrp.get_gain(0)))
+		print "Final gain channel: " + channel
+		print self.usrp.get_gain(channel)
+		self.config.set('USRP','gain_ch'+str(channel), str(self.usrp.get_gain(channel)))
 		self.config.set('CTRL','state','ready')
 		with open(self.configfil, 'wb') as configfile:
 			self.config.write(configfile)
-		np.save('/home/' + user + '/Documents/sampleDist.npy', histData)
+		np.save('/home/' + user + '/Documents/sampleDist_ch' + str(channel) + '.npy', histData)
 		
 	#Start measurement
 	def measure_start(self):
 		if self.adjust == 1: #Adjust gain?
-			self.meas_adjust()
+			self.meas_adjust(0)
+			self.meas_adjust(1)
 		else:
 			self.date = ephem.now().tuple() #Date for FITS-file
-			#self.receiver.start()
 			self.sig_time = 0
 			self.ref_time = 0
 			self.totpowTime = 0
@@ -194,7 +196,6 @@ class Measurement:
 		#DV pin logic
 		SN = int('00001',2)
 		RN = int('00000',2)
-		#self.receiver.start()
 		self.sigCount = 1
 		self.refCount = 1
 		#First sig/ref file sink
@@ -257,12 +258,11 @@ class Measurement:
 							continue
 					else:
 						break
-		#self.receiver.stop()
-		#self.receiver.wait()
 
 	#Set integration time
 	def set_int_time(self, int_time):
 		self.measureTime = int(int_time)
+		
 	def set_adjust(self, adjust):
 		self.adjust = int(adjust)
 		
@@ -273,9 +273,9 @@ class Measurement:
 		self.measureTimeTotPow = int(totPowTime)
 		
 	#Set USRP gain
-	def set_gain(self, gain):
+	def set_gain(self, gain, channel):
 		self.gain = int(gain)
-		self.usrp.set_gain(self.gain)
+		self.usrp.set_gain(self.gain, channel)
 		
 	#Set the number of FFT channels
 	def set_channels(self, channels):
@@ -284,12 +284,17 @@ class Measurement:
 	#Set USRP center frequency
 	def set_c_freq(self, c_freq):
 		self.c_freq = float(c_freq)*1e6
-		self.usrp.set_center_freq(self.c_freq)
+		self.usrp.set_center_freq(self.c_freq, 0)
+		self.usrp.set_center_freq(self.c_freq, 1)
 		
 	#Set the sampling frequency equivalent to bandwidth since I/Q samples, however aliasing might occur for high/low freq
 	def set_samp_rate(self, samp_rate):
 		self.samp_rate = float(samp_rate)*1e6
-		self.usrp.set_samp_rate(self.samp_rate)
+		self.usrp.set_samp_rate(self.samp_rate, 0)
+		self.usrp.set_samp_rate(self.samp_rate, 1)
+		self.usrp.set_bandwidth(self.samp_rate, 0)
+		self.usrp.set_bandwidth(self.samp_rate, 1)
+		
 	def set_index(self, count):
 		self.index = str(count)
 

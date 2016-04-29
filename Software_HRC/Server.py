@@ -95,35 +95,71 @@ def clientthread(conn):
 		#############Read data from server#################
 		###################################################
 		if command == read_sig:
-			dat = open('/home/' + user + '/GNURadio-FFTS/Spectrums/Signal.fits')
-			size = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/Signal.fits')
+			#Channel 0
+			dat = open('/home/' + user + '/GNURadio-FFTS/Spectrums/Signal_ch0.fits')
+			size = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/Signal_ch0.fits')
 			digits = len(str(size))
-			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n') #Format According to SCPI definition for OSO-FFTS systems
+			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n')
+			#Channel 1
+			dat1 = open('/home/' + user + '/GNURadio-FFTS/Spectrums/Signal_ch1.fits')
+			size1 = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/Signal_ch1.fits')
+			digits1 = len(str(size1))
+			conn.sendall('#' + str(digits1) + str(size1) + dat1.read() +'/n') #Format According to SCPI definition for OSO-FFTS systems
 		elif command == read_ref:
-			dat = open('/home/' + user + '/GNURadio-FFTS/Spectrums/Reference.fits')
-			size = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/Reference.fits')
+			#Channel 0
+			dat = open('/home/' + user + '/GNURadio-FFTS/Spectrums/Reference_ch0.fits')
+			size = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/Reference_ch0.fits')
 			digits = len(str(size))
-			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n') #Format According to SCPI definition for OSO-FFTS systems
+			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n')
+			#Channel 1
+			dat1 = open('/home/' + user + '/GNURadio-FFTS/Spectrums/Reference_ch1.fits')
+			size1 = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/Reference_ch1.fits')
+			digits1 = len(str(size1))
+			conn.sendall('#' + str(digits1) + str(size1) + dat1.read() +'/n') #Format According to SCPI definition for OSO-FFTS systems
 		elif command == read_sig_ref_ref or command == 'meas:read:srr':
-			dat = open('/home/' + user + '/GNURadio-FFTS/Spectrums/SRR.fits')
-			size = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/SRR.fits')
+			#Channel 0
+			dat = open('/home/' + user + '/GNURadio-FFTS/Spectrums/SRR_ch0.fits')
+			size = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/SRR_ch0.fits')
 			digits = len(str(size))
-			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n') #Format According to SCPI definition for OSO-FFTS systems
+			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n')
+			#Channel 1
+			dat1 = open('/home/' + user + '/GNURadio-FFTS/Spectrums/SRR_ch1.fits')
+			size1 = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/SRR_ch1.fits')
+			digits1 = len(str(size1))
+			conn.sendall('#' + str(digits1) + str(size1) + dat1.read() +'/n') #Format According to SCPI definition for OSO-FFTS systems
 		elif command == read_sig_ref:
-			dat = open('/home/' + user + '/GNURadio-FFTS/Spectrums/SR.fits')
-			size = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/SR.fits')
+			#Channel 0
+			dat = open('/home/' + user + '/GNURadio-FFTS/Spectrums/SR_ch0.fits')
+			size = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/SR_ch0.fits')
 			digits = len(str(size))
-			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n') #Format According to SCPI definition for OSO-FFTS systems
+			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n')
+			#Channel 1
+			dat1 = open('/home/' + user + '/GNURadio-FFTS/Spectrums/SR_ch1.fits')
+			size1 = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/SR_ch1.fits')
+			digits1 = len(str(size1))
+			conn.sendall('#' + str(digits1) + str(size1) + dat1.read() +'/n') #Format According to SCPI definition for OSO-FFTS systems
 		elif command == 'meas:read:hist?':
-			dat = open('/home/' + user + '/Documents/sampleDist.npy')
-			size = os.path.getsize('/home/' + user + '/Documents/sampleDist.npy')
+			#Channel 0
+			dat = open('/home/' + user + '/Documents/sampleDist_ch0.npy')
+			size = os.path.getsize('/home/' + user + '/Documents/sampleDist_ch0.npy')
 			digits = len(str(size))
-			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n') #Format According to SCPI definition for OSO-FFTS systems
+			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n')
+			#Channel 1
+			dat1 = open('/home/' + user + '/Documents/sampleDist_ch1.npy')
+			size1 = os.path.getsize('/home/' + user + '/Documents/sampleDist_ch1.npy')
+			digits1 = len(str(size1))
+			conn.sendall('#' + str(digits1) + str(size1) + dat1.read() +'/n') #Format According to SCPI definition for OSO-FFTS systems
 		elif command == 'meas:read:totpow?':
-			dat = open('/home/' + user + '/GNURadio-FFTS/Spectrums/TotPow.fits')
-			size = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/TotPow.fits')
+			#Channel 0
+			dat = open('/home/' + user + '/GNURadio-FFTS/Spectrums/TotPow0.fits')
+			size = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/TotPow0.fits')
 			digits = len(str(size))
-			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n') #Format According to SCPI definition for OSO-FFTS systems
+			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n')
+			#Channel 1
+			dat1 = open('/home/' + user + '/GNURadio-FFTS/Spectrums/TotPow1.fits')
+			size1 = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/TotPow1.fits')
+			digits1 = len(str(size1))
+			conn.sendall('#' + str(digits1) + str(size1) + dat1.read() +'/n') #Format According to SCPI definition for OSO-FFTS systems
 		#Start measurement
 		elif command == measure_start:
 			tb.set_adjust(0)
@@ -240,7 +276,8 @@ def clientthread(conn):
 			conn.send(bw + ' [MHz]' + ' - conf:usrp:bw?\n')
 		elif command == 'conf:usrp:gain?':
 			gain = str(tb.usrp.get_gain(0))
-			conn.send(gain + ' [dB]' + ' - conf:usrp:gain?\n')
+			gain1 = str(tb.usrp.get_gain(1))
+			conn.send('Ch0: ' + gain + ' [dB]' + 'Ch1: ' + gain1 + ' [dB]' + ' - conf:usrp:gain?\n')
 		elif command == 'conf:usrp:cfreq?':
 			c = str(tb.usrp.get_center_freq(0)*1e-6)
 			conn.send(c + ' [MHz] - conf:usrp:cfreq?\n')
@@ -266,7 +303,8 @@ def clientthread(conn):
 	Number of channels	| {channels} #
 	Resolution		| {resolution} [kHz]
 	Window			| {window}
-	USRP Gain		| {gain} dB
+	USRP Gain Ch0		| {gain} dB
+	USRP Gain Ch1		| {gain1} dB
 	Switch frequency	| {switch_freq} [Hz] (Approx CO-O3)
 	Master clock rate	| {clock_rate} MHz
 	I/Q rate		| {samp_rate} MHz
@@ -282,6 +320,7 @@ def clientthread(conn):
 				resolution = str((tb.usrp.get_samp_rate()/tb.fftSize)*1e-3),
 				window = 'Blackman-Harris',
 				gain = str(tb.usrp.get_gain(0)),
+				gain1 = str(tb.usrp.get_gain(1)),
 				switch_freq = 1/float(1.1),
 				clock_rate = tb.usrp.get_clock_rate(0)/1e6,
 				samp_rate = str(tb.usrp.get_samp_rate()*1e-6),

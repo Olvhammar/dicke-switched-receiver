@@ -51,24 +51,24 @@ class Finalize():
 			
 			#Perform final averaging channel 0
 			for i in range(self.index):
-				self.SR_data_0 += np.load('/home/' + self.user + '/Dokument/SR0_' + str(i) + '.npy')/float(self.index)
-				self.SRR_data_0 += np.load('/home/' + self.user + '/Dokument/SRR0_' + str(i) + '.npy')/float(self.index)
-				self.SIG_data_0 += np.load('/home/' + self.user + '/Dokument/SIG0_' + str(i) + '.npy')/float(self.index)
-				self.REF_data_0 += np.load('/home/' + self.user + '/Dokument/REF0_' + str(i) + '.npy')/float(self.index)
-				os.remove('/home/' + self.user + '/Dokument/SR0_' + str(i) + '.npy')
-				os.remove('/home/' + self.user + '/Dokument/SRR0_' + str(i) + '.npy')
-				os.remove('/home/' + self.user + '/Dokument/SIG0_' + str(i) + '.npy')
-				os.remove('/home/' + self.user + '/Dokument/REF0_' + str(i) + '.npy')
+				self.SR_data_0 += np.load('/home/' + self.user + '/Documents/SR0_' + str(i) + '.npy')/float(self.index)
+				self.SRR_data_0 += np.load('/home/' + self.user + '/Documents/SRR0_' + str(i) + '.npy')/float(self.index)
+				self.SIG_data_0 += np.load('/home/' + self.user + '/Documents/SIG0_' + str(i) + '.npy')/float(self.index)
+				self.REF_data_0 += np.load('/home/' + self.user + '/Documents/REF0_' + str(i) + '.npy')/float(self.index)
+				os.remove('/home/' + self.user + '/Documents/SR0_' + str(i) + '.npy')
+				os.remove('/home/' + self.user + '/Documents/SRR0_' + str(i) + '.npy')
+				os.remove('/home/' + self.user + '/Documents/SIG0_' + str(i) + '.npy')
+				os.remove('/home/' + self.user + '/Documents/REF0_' + str(i) + '.npy')
 			#Perform final averaging channel 1
 			for i in range(self.index):
-				self.SR_data_1 += np.load('/home/' + self.user + '/Dokument/SR1_' + str(i) + '.npy')/float(self.index)
-				self.SRR_data_1 += np.load('/home/' + self.user + '/Dokument/SRR1_' + str(i) + '.npy')/float(self.index)
-				self.SIG_data_1 += np.load('/home/' + self.user + '/Dokument/SIG1_' + str(i) + '.npy')/float(self.index)
-				self.REF_data_1 += np.load('/home/' + self.user + '/Dokument/REF1_' + str(i) + '.npy')/float(self.index)
-				os.remove('/home/' + self.user + '/Dokument/SR1_' + str(i) + '.npy')
-				os.remove('/home/' + self.user + '/Dokument/SRR1_' + str(i) + '.npy')
-				os.remove('/home/' + self.user + '/Dokument/SIG1_' + str(i) + '.npy')
-				os.remove('/home/' + self.user + '/Dokument/REF1_' + str(i) + '.npy')
+				self.SR_data_1 += np.load('/home/' + self.user + '/Documents/SR1_' + str(i) + '.npy')/float(self.index)
+				self.SRR_data_1 += np.load('/home/' + self.user + '/Documents/SRR1_' + str(i) + '.npy')/float(self.index)
+				self.SIG_data_1 += np.load('/home/' + self.user + '/Documents/SIG1_' + str(i) + '.npy')/float(self.index)
+				self.REF_data_1 += np.load('/home/' + self.user + '/Documents/REF1_' + str(i) + '.npy')/float(self.index)
+				os.remove('/home/' + self.user + '/Documents/SR1_' + str(i) + '.npy')
+				os.remove('/home/' + self.user + '/Documents/SRR1_' + str(i) + '.npy')
+				os.remove('/home/' + self.user + '/Documents/SIG1_' + str(i) + '.npy')
+				os.remove('/home/' + self.user + '/Documents/REF1_' + str(i) + '.npy')
 				
 			#Creates fits files channel 0
 			self.create_fits_file(self.SIG_data_0, "Signal_ch0", self.sig_time)
@@ -83,43 +83,43 @@ class Finalize():
 			self.create_fits_file(self.SR_data_1, "SR_ch1", self.obs_time)
 		
 			#To make sure same data not read twice channel 0
-			shutil.copy('/home/' + self.user + '/Dokument/Signal_ch0.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/Signal_ch0.fits')
-			shutil.copy('/home/' + self.user + '/Dokument/Reference_ch0.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/Reference_ch0.fits')
-			shutil.copy('/home/' + self.user + '/Dokument/SRR_ch0.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/SRR_ch0.fits')
-			shutil.copy('/home/' + self.user + '/Dokument/SR_ch0.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/SR_ch0.fits')
-			os.remove('/home/' + self.user + '/Dokument/Signal_ch0.fits')
-			os.remove('/home/' + self.user + '/Dokument/Reference_ch0.fits')
-			os.remove('/home/' + self.user + '/Dokument/SRR_ch0.fits')
-			os.remove('/home/' + self.user + '/Dokument/SR_ch0.fits')
+			shutil.copy('/home/' + self.user + '/Documents/Signal_ch0.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/Signal_ch0.fits')
+			shutil.copy('/home/' + self.user + '/Documents/Reference_ch0.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/Reference_ch0.fits')
+			shutil.copy('/home/' + self.user + '/Documents/SRR_ch0.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/SRR_ch0.fits')
+			shutil.copy('/home/' + self.user + '/Documents/SR_ch0.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/SR_ch0.fits')
+			os.remove('/home/' + self.user + '/Documents/Signal_ch0.fits')
+			os.remove('/home/' + self.user + '/Documents/Reference_ch0.fits')
+			os.remove('/home/' + self.user + '/Documents/SRR_ch0.fits')
+			os.remove('/home/' + self.user + '/Documents/SR_ch0.fits')
 			
 			#To make sure same data not read twice channel 1
-			shutil.copy('/home/' + self.user + '/Dokument/Signal_ch1.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/Signal_ch1.fits')
-			shutil.copy('/home/' + self.user + '/Dokument/Reference_ch1.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/Reference_ch1.fits')
-			shutil.copy('/home/' + self.user + '/Dokument/SRR_ch1.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/SRR_ch1.fits')
-			shutil.copy('/home/' + self.user + '/Dokument/SR_ch1.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/SR_ch1.fits')
-			os.remove('/home/' + self.user + '/Dokument/Signal_ch1.fits')
-			os.remove('/home/' + self.user + '/Dokument/Reference_ch1.fits')
-			os.remove('/home/' + self.user + '/Dokument/SRR_ch1.fits')
-			os.remove('/home/' + self.user + '/Dokument/SR_ch1.fits')
+			shutil.copy('/home/' + self.user + '/Documents/Signal_ch1.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/Signal_ch1.fits')
+			shutil.copy('/home/' + self.user + '/Documents/Reference_ch1.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/Reference_ch1.fits')
+			shutil.copy('/home/' + self.user + '/Documents/SRR_ch1.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/SRR_ch1.fits')
+			shutil.copy('/home/' + self.user + '/Documents/SR_ch1.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/SR_ch1.fits')
+			os.remove('/home/' + self.user + '/Documents/Signal_ch1.fits')
+			os.remove('/home/' + self.user + '/Documents/Reference_ch1.fits')
+			os.remove('/home/' + self.user + '/Documents/SRR_ch1.fits')
+			os.remove('/home/' + self.user + '/Documents/SR_ch1.fits')
 		
 			print "Done\n"
 		else:
 			self.totPow0_data = np.zeros(self.fftSize, dtype = np.float32)
 			self.totPow1_data = np.zeros(self.fftSize, dtype = np.float32)
 			for i in range(self.index):
-				self.totPow0_data += np.load('/home/' + self.user + '/Dokument/totPow0' +str(i)+ '.npy')/float(self.index)
-				self.totPow1_data += np.load('/home/' + self.user + '/Dokument/totPow1' +str(i)+ '.npy')/float(self.index)
-				os.remove('/home/' + self.user + '/Dokument/totPow0' +str(i)+'.npy')
-				os.remove('/home/' + self.user + '/Dokument/totPow1' +str(i)+'.npy')
+				self.totPow0_data += np.load('/home/' + self.user + '/Documents/totPow0' +str(i)+ '.npy')/float(self.index)
+				self.totPow1_data += np.load('/home/' + self.user + '/Documents/totPow1' +str(i)+ '.npy')/float(self.index)
+				os.remove('/home/' + self.user + '/Documents/totPow0' +str(i)+'.npy')
+				os.remove('/home/' + self.user + '/Documents/totPow1' +str(i)+'.npy')
 
 			self.create_fits_file(self.totPow0_data, "TotPow0", self.totPowTime)
 			self.create_fits_file(self.totPow1_data, "TotPow1", self.totPowTime)
 			
-			shutil.copy('/home/' + self.user + '/Dokument/TotPow0.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/TotPow0.fits')
-			os.remove('/home/' + self.user + '/Dokument/TotPow0.fits')
+			shutil.copy('/home/' + self.user + '/Documents/TotPow0.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/TotPow0.fits')
+			os.remove('/home/' + self.user + '/Documents/TotPow0.fits')
 			
-			shutil.copy('/home/' + self.user + '/Dokument/TotPow1.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/TotPow1.fits')
-			os.remove('/home/' + self.user + '/Dokument/TotPow1.fits')
+			shutil.copy('/home/' + self.user + '/Documents/TotPow1.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/TotPow1.fits')
+			os.remove('/home/' + self.user + '/Documents/TotPow1.fits')
 			
 			print "Total Power Measurement Done \n"
 				
@@ -169,7 +169,7 @@ class Finalize():
 		hdu.header['OBSTIME'] = obs_time
 	
 		#Write to disk, clobber indicates that overwrite is true
-		hdu.writeto('/home/' + self.user + '/Dokument/' + dataType +'.fits', clobber=True)
+		hdu.writeto('/home/' + self.user + '/Documents/' + dataType +'.fits', clobber=True)
 		print " saved to home folder"
 			
 	def calc_power(self, data):

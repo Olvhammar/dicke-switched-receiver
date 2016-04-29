@@ -80,15 +80,15 @@ class Analyze():
 		self.SRR_data_1 = (self.SIG_data_1-self.REF_data_1)/(self.REF_data_1)
 		self.SR_data_1 = self.SIG_data_1 - self.REF_data_1
 
-		self.tex1 = '/home/' + self.user + '/Dokument/SR0_' + self.index + '.npy'
-		self.tex2 = '/home/' + self.user + '/Dokument/SRR0_' + self.index + '.npy'
-		self.tex3 = '/home/' + self.user + '/Dokument/SIG0_' + self.index + '.npy'
-		self.tex4 = '/home/' + self.user + '/Dokument/REF0_' + self.index + '.npy'
+		self.tex1 = '/home/' + self.user + '/Documents/SR0_' + self.index + '.npy'
+		self.tex2 = '/home/' + self.user + '/Documents/SRR0_' + self.index + '.npy'
+		self.tex3 = '/home/' + self.user + '/Documents/SIG0_' + self.index + '.npy'
+		self.tex4 = '/home/' + self.user + '/Documents/REF0_' + self.index + '.npy'
 		
-		self.tex5 = '/home/' + self.user + '/Dokument/SR1_' + self.index + '.npy'
-		self.tex6 = '/home/' + self.user + '/Dokument/SRR1_' + self.index + '.npy'
-		self.tex7 = '/home/' + self.user + '/Dokument/SIG1_' + self.index + '.npy'
-		self.tex8 = '/home/' + self.user + '/Dokument/REF1_' + self.index + '.npy'
+		self.tex5 = '/home/' + self.user + '/Documents/SR1_' + self.index + '.npy'
+		self.tex6 = '/home/' + self.user + '/Documents/SRR1_' + self.index + '.npy'
+		self.tex7 = '/home/' + self.user + '/Documents/SIG1_' + self.index + '.npy'
+		self.tex8 = '/home/' + self.user + '/Documents/REF1_' + self.index + '.npy'
 		
 		np.save(self.tex1, self.SR_data_0)
 		np.save(self.tex2, self.SRR_data_0)
@@ -112,8 +112,8 @@ class Analyze():
 		#Average totalpower spectrum
 		self.totPow_spec_0 = self.stack_FFT_file("/tmp/ramdisk/totPow0"+self.index)
 		self.totPow_spec_1 = self.stack_FFT_file("/tmp/ramdisk/totPow1"+self.index)
-		self.tex_0 = '/home/' + self.user + '/Dokument/totPow0' +self.index+ '.npy'
-		self.tex_1 = '/home/' + self.user + '/Dokument/totPow1' +self.index+ '.npy'
+		self.tex_0 = '/home/' + self.user + '/Documents/totPow0' +self.index+ '.npy'
+		self.tex_1 = '/home/' + self.user + '/Documents/totPow1' +self.index+ '.npy'
 		np.save(self.tex_0, self.totPow_spec_0)
 		np.save(self.tex_1, self.totPow_spec_1)
 		

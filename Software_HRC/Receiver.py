@@ -155,46 +155,46 @@ class Receiver(gr.top_block, Qt.QWidget):
 		self.connect((self.blks2_selector_1, 0), self.blocks_null_sink_1)
 		
 		#########PROBE SAMPLES channel 0##########
-		#self.probe_signal = blocks.probe_signal_f()
-		#self.blocks_complex_to_mag_0 = blocks.complex_to_mag(1)
+		self.probe_signal = blocks.probe_signal_f()
+		self.blocks_complex_to_mag_0 = blocks.complex_to_mag(1)
 		
-		#self.connect((self.blocks_complex_to_mag_0, 0), (self.probe_signal, 0))    
-		#self.connect((self.uhd_usrp_source_0, 0), (self.blocks_complex_to_mag_0, 0))
+		self.connect((self.blocks_complex_to_mag_0, 0), (self.probe_signal, 0))    
+		self.connect((self.uhd_usrp_source_0, 0), (self.blocks_complex_to_mag_0, 0))
 		
 		#Probe update rate
-		#def _probe_var_probe():
-		#	while True:
-		#		val = self.probe_signal.level()
-		#		try:
-		#			self.set_probe_var(val)
-		#		except AttributeError:
-		#			pass
-		#		time.sleep(10 / (self.samp_rate)) #Update probe variabel every 10/samp_rate seconds
+		def _probe_var_probe():
+			while True:
+				val = self.probe_signal.level()
+				try:
+					self.set_probe_var(val)
+				except AttributeError:
+					pass
+				time.sleep(10 / (self.samp_rate)) #Update probe variabel every 10/samp_rate seconds
 
-		#_probe_var_thread = threading.Thread(target=_probe_var_probe)
-		#_probe_var_thread.daemon = True
-		#_probe_var_thread.start()
+		_probe_var_thread = threading.Thread(target=_probe_var_probe)
+		_probe_var_thread.daemon = True
+		_probe_var_thread.start()
 		
 		#########PROBE SAMPLES channel 1##########
-		#self.probe_signal_1 = blocks.probe_signal_f()
-		#self.blocks_complex_to_mag_1 = blocks.complex_to_mag(1)
+		self.probe_signal_1 = blocks.probe_signal_f()
+		self.blocks_complex_to_mag_1 = blocks.complex_to_mag(1)
 		
-		#self.connect((self.blocks_complex_to_mag_1, 0), (self.probe_signal_1, 0))    
-		#self.connect((self.uhd_usrp_source_0, 1), (self.blocks_complex_to_mag_1, 0))
+		self.connect((self.blocks_complex_to_mag_1, 0), (self.probe_signal_1, 0))    
+		self.connect((self.uhd_usrp_source_0, 1), (self.blocks_complex_to_mag_1, 0))
 		
 		#Probe update rate
-		#def _probe_var_probe_1():
-		#	while True:
-		#		val = self.probe_signal_1.level()
-		#		try:
-		#			self.set_probe_var_1(val)
-		#		except AttributeError:
-		#			pass
-		#		time.sleep(10 / (self.samp_rate)) #Update probe variabel every 10/samp_rate seconds
+		def _probe_var_probe_1():
+			while True:
+				val = self.probe_signal_1.level()
+				try:
+					self.set_probe_var_1(val)
+				except AttributeError:
+					pass
+				time.sleep(10 / (self.samp_rate)) #Update probe variabel every 10/samp_rate seconds
 
-		#_probe_var_thread_1 = threading.Thread(target=_probe_var_probe_1)
-		#_probe_var_thread_1.daemon = True
-		#_probe_var_thread_1.start()
+		_probe_var_thread_1 = threading.Thread(target=_probe_var_probe_1)
+		_probe_var_thread_1.daemon = True
+		_probe_var_thread_1.start()
 	
 	def get_samp_rate(self):
 		return self.samp_rate
