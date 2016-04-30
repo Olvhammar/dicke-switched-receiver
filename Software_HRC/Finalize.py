@@ -36,6 +36,8 @@ class Finalize():
 		print self.sig_time
 		print "refTime: "
 		print self.ref_time
+		print "Index: "
+		print self.index
 		
 		if self.switched == 1:
 			#Arrays to be filled
@@ -97,6 +99,7 @@ class Finalize():
 			shutil.copy('/home/' + self.user + '/Documents/Reference_ch1.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/Reference_ch1.fits')
 			shutil.copy('/home/' + self.user + '/Documents/SRR_ch1.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/SRR_ch1.fits')
 			shutil.copy('/home/' + self.user + '/Documents/SR_ch1.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/SR_ch1.fits')
+			
 			os.remove('/home/' + self.user + '/Documents/Signal_ch1.fits')
 			os.remove('/home/' + self.user + '/Documents/Reference_ch1.fits')
 			os.remove('/home/' + self.user + '/Documents/SRR_ch1.fits')

@@ -44,6 +44,8 @@ class Measurement:
 		
 		#Initate GnuRadio flowgraph
 		self.receiver = Receiver(self.fftSize, self.samp_rate, self.gain, self.c_freq)
+		self.receiver.blks2_selector_0.set_output_index(1)
+		self.receiver.blks2_selector_1.set_output_index(1)
 		#Creates usrp object from receiver
 		self.usrp = self.receiver.uhd_usrp_source_0
 		self.receiver.start()
@@ -68,7 +70,7 @@ class Measurement:
 		with open(self.configfil, 'wb') as configfile:
 			self.config.write(configfile)
 		timedat = 1 #Read samples for 1 second on current gain
-		gain = 15 #Gain start value
+		gain = 5 #Gain start value
 		self.set_gain(gain, channel)
 		while gain < 31 and gain != -1:
 			print gain
@@ -80,7 +82,7 @@ class Measurement:
 				time.sleep(10 / (self.samp_rate))
 				if channel == 0:
 					L.append(self.receiver.get_probe_var())
-				else
+				else:
 					L.append(self.receiver.get_probe_var_1())
 			for i in L:
 				if i > 0.5:
@@ -92,7 +94,7 @@ class Measurement:
 			if (len(L1)/float(hundra)) < 0.05: #As long as the samples above the value 0.5 are under 5% of all collected samples continue to increase gain
 				gain += 1
 				self.set_gain(gain, channel)
-				print "Set gain on channel: " + channel
+				print "Set gain on channel" + str(channel) +": "
 				print self.usrp.get_gain(channel)
 				del L, L1, L2
 			elif gain == 30:
@@ -104,13 +106,13 @@ class Measurement:
 				i = -1
 				del L, L1, L2
 				break
-		print "Final gain channel: " + channel
+		print "Final gain channel " + str(channel) +": "
 		print self.usrp.get_gain(channel)
 		self.config.set('USRP','gain_ch'+str(channel), str(self.usrp.get_gain(channel)))
 		self.config.set('CTRL','state','ready')
 		with open(self.configfil, 'wb') as configfile:
 			self.config.write(configfile)
-		np.save('/home/' + user + '/Documents/sampleDist_ch' + str(channel) + '.npy', histData)
+		np.save('/home/' + self.user + '/Documents/sampleDist_ch' + str(channel) + '.npy', histData)
 		
 	#Start measurement
 	def measure_start(self):
@@ -177,6 +179,8 @@ class Measurement:
 		while time.time() <= t_end:
 			if int(self.config.get('CTRL','abort')) == 1:
 				break
+		self.receiver.signal_file_sink_1.close()
+		self.receiver.signal_file_sink_3.close()
 		end = time.time()
 		self.totpowTime += end-start
 		
@@ -191,70 +195,50 @@ class Measurement:
 		except OSError:
 			pass
 		#SR pin logic, observe that pin logic might vary with with FPGA image
-		S = int('00011',2)
+		S = int('00011',2) 
 		R = int('00010',2)
 		#DV pin logic
 		SN = int('00001',2)
 		RN = int('00000',2)
-		self.sigCount = 1
-		self.refCount = 1
-		#First sig/ref file sink
-		if self.sigCount == 1:
-			self.receiver.signal_file_sink_1.open("/tmp/ramdisk/sig0_0" + self.index) #Channel 0
-			self.receiver.signal_file_sink_2.open("/tmp/ramdisk/ref0_0" + self.index)
-			self.receiver.signal_file_sink_3.open("/tmp/ramdisk/sig1_0" + self.index) #Channel 1
-			self.receiver.signal_file_sink_4.open("/tmp/ramdisk/ref1_0" + self.index)
-		else:
-			pass
+		self.sigCount = 0
+		self.refCount = 0
 		countTwo = 0
 		while countTwo == 0:
-			if S == S: #Stream to sig sink if datavalid = 1 and SR = 1
+			if self.usrp.get_gpio_attr("FP0", "READBACK") == S: #Stream to sig sink if datavalid = 1 and SR = 1
 				countTwo = 1
 				t_end = time.time() + self.measureTime
 				while time.time() <= t_end:
 					if int(self.config.get('CTRL','abort')) == 1:
 						break
-					elif S == S:
+					elif self.usrp.get_gpio_attr("FP0", "READBACK") == S:
 						time.sleep(2e-3) #Blanking for GnuRadio delay
 						start1 = time.time()
-						self.receiver.blks2_selector_0.set_output_index(1) #Stream to signal sink
-						self.receiver.blks2_selector_1.set_output_index(1)
-						while S == S and int(self.config.get('CTRL','abort')) != 1 and time.time() <= t_end: #File sink closes if Datavalid = 0
+						self.receiver.signal_file_sink_1.open("/tmp/ramdisk/sig0_" + str(self.sigCount) + self.index)
+						self.receiver.signal_file_sink_3.open("/tmp/ramdisk/sig1_" + str(self.sigCount) + self.index)
+						while self.usrp.get_gpio_attr("FP0", "READBACK") == S and int(self.config.get('CTRL','abort')) != 1 and time.time() <= t_end: #File sink closes if Datavalid = 0
 							continue
+						self.receiver.signal_file_sink_1.close()
+						self.receiver.signal_file_sink_3.close()
 						stop1 = time.time()
 						self.sig_time += stop1-start1
 						print 'sig'
-						self.receiver.blks2_selector_0.set_output_index(0)
-						self.receiver.blks2_selector_1.set_output_index(0)
-						#self.receiver.lock()
-						#self.receiver.signal_file_sink_1.close()
-						#self.receiver.signal_file_sink_3.close()
-						#self.receiver.signal_file_sink_1.open("/tmp/ramdisk/sig0_" + str(self.sigCount) + self.index)
-						#self.receiver.signal_file_sink_3.open("/tmp/ramdisk/sig1_" + str(self.sigCount) + self.index)
-						#self.receiver.unlock()
 						self.sigCount += 1
-						#while self.usrp.get_gpio_attr("FP0", "READBACK", 0) == SN or self.usrp.get_gpio_attr("FP0", "READBACK") == RN:
-						#	continue
+						while self.usrp.get_gpio_attr("FP0", "READBACK") == SN or self.usrp.get_gpio_attr("FP0", "READBACK") == RN:
+							continue
 					elif self.usrp.get_gpio_attr("FP0", "READBACK") == R:
 						time.sleep(2e-3)
 						start2 = time.time()
-						self.receiver.blks2_selector_0.set_output_index(2)
-						self.receiver.blks2_selector_1.set_output_index(2) # Stream to reference sink
-						while self.usrp.get_gpio_attr("FP0", "READBACK", 0) == R and int(self.config.get('CTRL','abort')) != 1: #Close file sink datavalid = 0
+						self.receiver.signal_file_sink_1.open("/tmp/ramdisk/ref0_" + str(self.refCount) + self.index)
+						self.receiver.signal_file_sink_3.open("/tmp/ramdisk/ref1_" + str(self.refCount) + self.index)
+						while self.usrp.get_gpio_attr("FP0", "READBACK") == R and int(self.config.get('CTRL','abort')) != 1: #Close file sink datavalid = 0
 							continue
+						self.receiver.signal_file_sink_1.close()
+						self.receiver.signal_file_sink_3.close()
 						stop2 = time.time()
 						self.ref_time += stop2-start2
 						print 'ref'
-						self.receiver.blks2_selector_0.set_output_index(0)
-						self.receiver.blks2_selector_1.set_output_index(0) #Null sink
-						self.receiver.lock()
-						self.receiver.signal_file_sink_2.close()
-						self.receiver.signal_file_sink_2.open("/tmp/ramdisk/ref0_" + str(self.refCount) + self.index)
-						self.receiver.signal_file_sink_4.close()
-						self.receiver.signal_file_sink_4.open("/tmp/ramdisk/ref1_" + str(self.refCount) + self.index)
-						self.receiver.unlock()
 						self.refCount += 1
-						while self.usrp.get_gpio_attr("FP0", "READBACK", 0) == RN or self.usrp.get_gpio_attr("FP0", "READBACK") == SN:
+						while self.usrp.get_gpio_attr("FP0", "READBACK") == RN or self.usrp.get_gpio_attr("FP0", "READBACK") == SN:
 							continue
 					else:
 						break
@@ -290,8 +274,7 @@ class Measurement:
 	#Set the sampling frequency equivalent to bandwidth since I/Q samples, however aliasing might occur for high/low freq
 	def set_samp_rate(self, samp_rate):
 		self.samp_rate = float(samp_rate)*1e6
-		self.usrp.set_samp_rate(self.samp_rate, 0)
-		self.usrp.set_samp_rate(self.samp_rate, 1)
+		self.usrp.set_samp_rate(self.samp_rate)
 		self.usrp.set_bandwidth(self.samp_rate, 0)
 		self.usrp.set_bandwidth(self.samp_rate, 1)
 		

@@ -42,16 +42,16 @@ class Analyze():
 		print self.sigCount
 
 		for i in range(self.sigCount):
-			item = "/tmp/ramdisk/sig0_" + str(i) + self.index
-			item = "/tmp/ramdisk/sig1_" + str(i) + self.index
-			self.sigList0.append(item)
-			self.sigList1.append(item)
+			item1 = "/tmp/ramdisk/sig0_" + str(i) + self.index
+			item2 = "/tmp/ramdisk/sig1_" + str(i) + self.index
+			self.sigList0.append(item1)
+			self.sigList1.append(item2)
 			
 		for i in range(self.refCount):
-			item = "/tmp/ramdisk/ref0_" + str(i) + self.index
-			item = "/tmp/ramdisk/ref1_" + str(i) + self.index
-			self.refList0.append(item)
-			self.refList1.append(item)
+			item1 = "/tmp/ramdisk/ref0_" + str(i) + self.index
+			item2 = "/tmp/ramdisk/ref1_" + str(i) + self.index
+			self.refList0.append(item1)
+			self.refList1.append(item2)
 		
 		#If first file to small (the loop sometimes enter at late switch state) remove it
 		if os.path.getsize('/tmp/ramdisk/sig0_0' + self.index) == 0:

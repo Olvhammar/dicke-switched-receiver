@@ -67,14 +67,14 @@ class Receiver(gr.top_block, Qt.QWidget):
 		self.uhd_usrp_source_0.set_center_freq(self.c_freq, 0)
 		self.uhd_usrp_source_0.set_gain(self.gain, 0)
 		self.uhd_usrp_source_0.set_bandwidth(self.samp_rate, 0)
-		#self.uhd_usrp_source_0.set_clock_source('internal', 0)
+		self.uhd_usrp_source_0.set_clock_source('external')
 		
 		#Configure USRP channel 1
 		self.uhd_usrp_source_0.set_antenna("RX2", 1)
 		self.uhd_usrp_source_0.set_center_freq(self.c_freq, 1)
 		self.uhd_usrp_source_0.set_gain(self.gain, 1)
 		self.uhd_usrp_source_0.set_bandwidth(self.samp_rate, 1)
-		#self.uhd_usrp_source_0.set_clock_source('internal', 1)
+		#self.uhd_usrp_source_0.set_clock_source('external', 1)
 		
 		#Signal and reference file sinks channel 0
 		self.signal_file_sink_1 = blocks.file_sink(gr.sizeof_float*1, self.dump1, False)
@@ -157,9 +157,16 @@ class Receiver(gr.top_block, Qt.QWidget):
 		#########PROBE SAMPLES channel 0##########
 		self.probe_signal = blocks.probe_signal_f()
 		self.blocks_complex_to_mag_0 = blocks.complex_to_mag(1)
-		
-		self.connect((self.blocks_complex_to_mag_0, 0), (self.probe_signal, 0))    
+		  
 		self.connect((self.uhd_usrp_source_0, 0), (self.blocks_complex_to_mag_0, 0))
+		self.connect((self.blocks_complex_to_mag_0, 0), (self.probe_signal, 0))  
+		
+		#########PROBE SAMPLES channel 1##########
+		self.probe_signal_1 = blocks.probe_signal_f()
+		self.blocks_complex_to_mag_1 = blocks.complex_to_mag(1)
+		
+		self.connect((self.uhd_usrp_source_0, 1), (self.blocks_complex_to_mag_1, 0))
+		self.connect((self.blocks_complex_to_mag_1, 0), (self.probe_signal_1, 0))    
 		
 		#Probe update rate
 		def _probe_var_probe():
@@ -174,13 +181,6 @@ class Receiver(gr.top_block, Qt.QWidget):
 		_probe_var_thread = threading.Thread(target=_probe_var_probe)
 		_probe_var_thread.daemon = True
 		_probe_var_thread.start()
-		
-		#########PROBE SAMPLES channel 1##########
-		self.probe_signal_1 = blocks.probe_signal_f()
-		self.blocks_complex_to_mag_1 = blocks.complex_to_mag(1)
-		
-		self.connect((self.blocks_complex_to_mag_1, 0), (self.probe_signal_1, 0))    
-		self.connect((self.uhd_usrp_source_0, 1), (self.blocks_complex_to_mag_1, 0))
 		
 		#Probe update rate
 		def _probe_var_probe_1():
@@ -208,4 +208,16 @@ class Receiver(gr.top_block, Qt.QWidget):
 
 	def set_fft_size(self, fft_size):
 		self.fftsize = fftsize
+		
+	def get_probe_var(self):
+		return self.probe_var
+	
+	def get_probe_var_1(self):
+		return self.probe_var_1
+
+	def set_probe_var(self, probe_var):
+		self.probe_var = probe_var
+		
+	def set_probe_var_1(self, probe_var):
+		self.probe_var_1 = probe_var
 	

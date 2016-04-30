@@ -195,7 +195,7 @@ def clientthread(conn):
 		elif command == conf_obs_time and value != -2:
 			obs_time = int(value)
 			if obs_time > 1000 and int(obs_time)%60 == 0:
-				lp = 5
+				lp = 60
 				tb.set_int_time(lp)
 				tb.set_time_totPow(lp)
 				loops = int(obs_time/(1*lp))
