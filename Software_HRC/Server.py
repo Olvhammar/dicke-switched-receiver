@@ -35,10 +35,14 @@ conf_channels = 'conf:fft:channels'
 conf_gain = 'conf:usrp:gain'
 conf_c_freq = 'conf:usrp:cfreq'
 conf_obs_time = 'conf:time:obs'
-read_ref = 'meas:read:ref?'
-read_sig = 'meas:read:sig?'
-read_sig_ref_ref = 'meas:read:srr?'
-read_sig_ref = 'meas:read:sr?'
+read_ref_0 = 'meas:read:ref_ch0?'
+read_sig_0 = 'meas:read:sig_ch0?'
+read_sig_ref_ref_0 = 'meas:read:srr_ch0?'
+read_sig_ref_0 = 'meas:read:sr_ch0?'
+read_ref_1 = 'meas:read:ref_ch1?'
+read_sig_1 = 'meas:read:sig_ch1?'
+read_sig_ref_ref_1 = 'meas:read:srr_ch1?'
+read_sig_ref_1 = 'meas:read:sr_ch1?'
 
 #Create socket server and bind to local host and port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -94,56 +98,61 @@ def clientthread(conn):
 			value = newdata[i:].strip().rstrip()
 		#############Read data from server#################
 		###################################################
-		if command == read_sig:
+		if command == read_sig_0:
 			#Channel 0
 			dat = open('/home/' + user + '/GNURadio-FFTS/Spectrums/Signal_ch0.fits')
 			size = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/Signal_ch0.fits')
 			digits = len(str(size))
 			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n')
+		elif command == read_sig_1:
 			#Channel 1
 			dat1 = open('/home/' + user + '/GNURadio-FFTS/Spectrums/Signal_ch1.fits')
 			size1 = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/Signal_ch1.fits')
 			digits1 = len(str(size1))
 			conn.sendall('#' + str(digits1) + str(size1) + dat1.read() +'/n') #Format According to SCPI definition for OSO-FFTS systems
-		elif command == read_ref:
+		elif command == read_ref_0:
 			#Channel 0
 			dat = open('/home/' + user + '/GNURadio-FFTS/Spectrums/Reference_ch0.fits')
 			size = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/Reference_ch0.fits')
 			digits = len(str(size))
 			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n')
+		elif command == read_ref_1:
 			#Channel 1
 			dat1 = open('/home/' + user + '/GNURadio-FFTS/Spectrums/Reference_ch1.fits')
 			size1 = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/Reference_ch1.fits')
 			digits1 = len(str(size1))
 			conn.sendall('#' + str(digits1) + str(size1) + dat1.read() +'/n') #Format According to SCPI definition for OSO-FFTS systems
-		elif command == read_sig_ref_ref or command == 'meas:read:srr':
+		elif command == read_sig_ref_ref_0:
 			#Channel 0
 			dat = open('/home/' + user + '/GNURadio-FFTS/Spectrums/SRR_ch0.fits')
 			size = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/SRR_ch0.fits')
 			digits = len(str(size))
 			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n')
+		elif command == read_sig_ref_ref_1:
 			#Channel 1
 			dat1 = open('/home/' + user + '/GNURadio-FFTS/Spectrums/SRR_ch1.fits')
 			size1 = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/SRR_ch1.fits')
 			digits1 = len(str(size1))
 			conn.sendall('#' + str(digits1) + str(size1) + dat1.read() +'/n') #Format According to SCPI definition for OSO-FFTS systems
-		elif command == read_sig_ref:
+		elif command == read_sig_ref_0:
 			#Channel 0
 			dat = open('/home/' + user + '/GNURadio-FFTS/Spectrums/SR_ch0.fits')
 			size = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/SR_ch0.fits')
 			digits = len(str(size))
 			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n')
+		elif command == read_sig_ref_1:
 			#Channel 1
 			dat1 = open('/home/' + user + '/GNURadio-FFTS/Spectrums/SR_ch1.fits')
 			size1 = os.path.getsize('/home/' + user + '/GNURadio-FFTS/Spectrums/SR_ch1.fits')
 			digits1 = len(str(size1))
 			conn.sendall('#' + str(digits1) + str(size1) + dat1.read() +'/n') #Format According to SCPI definition for OSO-FFTS systems
-		elif command == 'meas:read:hist?':
+		elif command == 'meas:read:hist_ch0?':
 			#Channel 0
 			dat = open('/home/' + user + '/Documents/sampleDist_ch0.npy')
 			size = os.path.getsize('/home/' + user + '/Documents/sampleDist_ch0.npy')
 			digits = len(str(size))
 			conn.sendall('#' + str(digits) + str(size) + dat.read() +'/n')
+		elif command == 'meas:read:hist_ch1?':
 			#Channel 1
 			dat1 = open('/home/' + user + '/Documents/sampleDist_ch1.npy')
 			size1 = os.path.getsize('/home/' + user + '/Documents/sampleDist_ch1.npy')
@@ -219,7 +228,7 @@ def clientthread(conn):
 				
 		elif command == conf_bandwidth and value != -2:
 			samp_rate = value
-			if int(samp_rate) <= 50:
+			if float(samp_rate) <= 50:
 				tb.set_samp_rate(samp_rate)
 				config.set('USRP','bw', str(tb.usrp.get_samp_rate()*1e-6))
 				with open(configfil, 'wb') as configfile:
@@ -229,7 +238,7 @@ def clientthread(conn):
 				conn.send('ERROR Bad bandwidth - conf:usrp:bw ' + samp_rate + '\n')
 		elif command == conf_channels and value != -2:
 			channels = value
-			if int(channels) == 8192 or int(channels) == 4096  or int(channels) == 2048 or int(channels) == 1024 or int(channels) == 512 or int(channels) == 256 or int(channels) == 128:
+			if int(channels) == 16384 or int(channels) == 8192 or int(channels) == 4096  or int(channels) == 2048 or int(channels) == 1024 or int(channels) == 512 or int(channels) == 256 or int(channels) == 128:
 				tb.set_channels(channels)
 				config.set('USRP','channels', channels)
 				with open(configfil, 'wb') as configfile:
@@ -239,7 +248,7 @@ def clientthread(conn):
 				conn.send('ERROR Bad number of channels - conf:fft:channels ' +channels + '\n')
 		elif command == conf_c_freq and value != -2:
 			c_freq = value
-			if float(c_freq) >= 400 and float(c_freq) <= 4400: #Change value for UBX, specified are for SBX
+			if float(c_freq) >= 10 and float(c_freq) <= 6000: #Change value for UBX, specified are for SBX
 				tb.set_c_freq(c_freq)
 				config.set('USRP','cfreq', str(tb.usrp.get_center_freq(0)*1e-6))
 				with open(configfil, 'wb') as configfile:
@@ -277,7 +286,7 @@ def clientthread(conn):
 		elif command == 'conf:usrp:gain?':
 			gain = str(tb.usrp.get_gain(0))
 			gain1 = str(tb.usrp.get_gain(1))
-			conn.send('Ch0: ' + gain + ' [dB]' + 'Ch1: ' + gain1 + ' [dB]' + ' - conf:usrp:gain?\n')
+			conn.send('Ch0: ' + gain + ' [dB] ' + 'Ch1: ' + gain1 + ' [dB]' + ' - conf:usrp:gain?\n')
 		elif command == 'conf:usrp:cfreq?':
 			c = str(tb.usrp.get_center_freq(0)*1e-6)
 			conn.send(c + ' [MHz] - conf:usrp:cfreq?\n')

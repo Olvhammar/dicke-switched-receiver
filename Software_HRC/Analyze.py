@@ -28,7 +28,11 @@ class Analyze():
 		self.switched = switched
 		self.error = 0
 		if self.switched == 1:
-			self.analyze()
+			if self.sigCount == 0:
+				print "test"
+				self.analyze_TotPow()
+			else:
+				self.analyze()
 		else:
 			self.analyze_TotPow()
 
@@ -39,7 +43,6 @@ class Analyze():
 		
 		self.sigList1 = []
 		self.refList1 = []
-		print self.sigCount
 
 		for i in range(self.sigCount):
 			item1 = "/tmp/ramdisk/sig0_" + str(i) + self.index
@@ -110,8 +113,8 @@ class Analyze():
 	def analyze_TotPow(self):
 		
 		#Average totalpower spectrum
-		self.totPow_spec_0 = self.stack_FFT_file("/tmp/ramdisk/totPow0"+self.index)
-		self.totPow_spec_1 = self.stack_FFT_file("/tmp/ramdisk/totPow1"+self.index)
+		self.totPow_spec_0 = self.stack_FFT_file("/tmp/ramdisk/sig0_0"+self.index)
+		self.totPow_spec_1 = self.stack_FFT_file("/tmp/ramdisk/sig1_0"+self.index)
 		self.tex_0 = '/home/' + self.user + '/Documents/totPow0' +self.index+ '.npy'
 		self.tex_1 = '/home/' + self.user + '/Documents/totPow1' +self.index+ '.npy'
 		np.save(self.tex_0, self.totPow_spec_0)
@@ -124,7 +127,7 @@ class Analyze():
 			
 	#Stack all the data
 	def stack_all_data(self, files):
-		pool = Pool(processes=2)
+		pool = Pool(processes=4)
 		spectra = pool.map(self.stack_FFT_file, files)
 		pool.terminate()
 		return spectra

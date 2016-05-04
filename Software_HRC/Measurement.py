@@ -69,7 +69,7 @@ class Measurement:
 		self.config.set('CTRL','state','adjusting')
 		with open(self.configfil, 'wb') as configfile:
 			self.config.write(configfile)
-		timedat = 1 #Read samples for 1 second on current gain
+		timedat = 1.5 #Read samples for 1 second on current gain
 		gain = 5 #Gain start value
 		self.set_gain(gain, channel)
 		while gain < 31 and gain != -1:
@@ -79,7 +79,7 @@ class Measurement:
 			L2 = []
 			end = time.time() + timedat
 			while time.time() <= end:
-				time.sleep(10 / (self.samp_rate))
+				time.sleep(100 / (self.samp_rate))
 				if channel == 0:
 					L.append(self.receiver.get_probe_var())
 				else:
@@ -147,7 +147,7 @@ class Measurement:
 			print stop - start
 			edit = 0
 			if int(self.config.get('CTRL','abort')) != 1:
-				td = Finalize(index, self.fftSize, self.c_freq, self.samp_rate, edit, self.sig_time, self.ref_time, self.switched, self.totpowTime, self.user, self.date)
+				td = Finalize(index, self.fftSize, self.c_freq, self.samp_rate, edit, self.sig_time, self.ref_time, self.switched, self.totpowTime, self.user, self.date, self.sigCount)
 			files = glob.glob('/tmp/ramdisk/*')
 			for f in files:
 				if f.endswith(self.index):
@@ -168,17 +168,14 @@ class Measurement:
 			pass
 		
 		self.date = ephem.now().tuple()
-		self.receiver.signal_file_sink_1.open("/tmp/ramdisk/totPow0" + self.index)
-		self.receiver.signal_file_sink_3.open("/tmp/ramdisk/totPow1" + self.index)
+		self.receiver.signal_file_sink_1.open("/tmp/ramdisk/sig0_0" + self.index)
+		self.receiver.signal_file_sink_3.open("/tmp/ramdisk/sig1_0" + self.index)
 
 		print self.measureTimeTotPow
 		t_end = time.time() + self.measureTimeTotPow
 		start = time.time()
-		self.receiver.blks2_selector_0.set_output_index(1) #Stream to signal sink
-		self.receiver.blks2_selector_1.set_output_index(1)
-		while time.time() <= t_end:
-			if int(self.config.get('CTRL','abort')) == 1:
-				break
+		while time.time() <= t_end and int(self.config.get('CTRL','abort')) != 1:
+			continue
 		self.receiver.signal_file_sink_1.close()
 		self.receiver.signal_file_sink_3.close()
 		end = time.time()
@@ -230,7 +227,7 @@ class Measurement:
 						start2 = time.time()
 						self.receiver.signal_file_sink_1.open("/tmp/ramdisk/ref0_" + str(self.refCount) + self.index)
 						self.receiver.signal_file_sink_3.open("/tmp/ramdisk/ref1_" + str(self.refCount) + self.index)
-						while self.usrp.get_gpio_attr("FP0", "READBACK") == R and int(self.config.get('CTRL','abort')) != 1: #Close file sink datavalid = 0
+						while self.usrp.get_gpio_attr("FP0", "READBACK") == R and int(self.config.get('CTRL','abort')) != 1 and time.time() <= t_end: #Close file sink datavalid = 0
 							continue
 						self.receiver.signal_file_sink_1.close()
 						self.receiver.signal_file_sink_3.close()

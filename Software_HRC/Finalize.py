@@ -17,7 +17,7 @@ from astropy.io import fits
 import shutil
 
 class Finalize():
-	def __init__(self, index, fftSize, c_freq, samp_rate, edit, sig_time, ref_time, switched, powTime, user, date):
+	def __init__(self, index, fftSize, c_freq, samp_rate, edit, sig_time, ref_time, switched, powTime, user, date, sigCount):
 		self.user = user
 		self.index = index
 		self.fftSize = fftSize
@@ -31,6 +31,7 @@ class Finalize():
 		self.switched = switched
 		self.totPowTime = powTime
 		self.date = date
+		self.sigCount = sigCount-1
 		
 		print "sigTime: "
 		print self.sig_time
@@ -39,7 +40,7 @@ class Finalize():
 		print "Index: "
 		print self.index
 		
-		if self.switched == 1:
+		if self.switched == 1 and self.sigCount != 0:
 			#Arrays to be filled
 			self.SR_data_0 = np.zeros(fftSize, dtype = np.float32)
 			self.SRR_data_0 = np.zeros(fftSize, dtype = np.float32)
@@ -115,14 +116,14 @@ class Finalize():
 				os.remove('/home/' + self.user + '/Documents/totPow0' +str(i)+'.npy')
 				os.remove('/home/' + self.user + '/Documents/totPow1' +str(i)+'.npy')
 
-			self.create_fits_file(self.totPow0_data, "TotPow0", self.totPowTime)
-			self.create_fits_file(self.totPow1_data, "TotPow1", self.totPowTime)
+			self.create_fits_file(self.totPow0_data, "Signal_ch0", self.totPowTime)
+			self.create_fits_file(self.totPow1_data, "Signal_ch1", self.totPowTime)
 			
-			shutil.copy('/home/' + self.user + '/Documents/TotPow0.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/TotPow0.fits')
-			os.remove('/home/' + self.user + '/Documents/TotPow0.fits')
+			shutil.copy('/home/' + self.user + '/Documents/Signal_ch0.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/Signal_ch0.fits')
+			os.remove('/home/' + self.user + '/Documents/Signal_ch0.fits')
 			
-			shutil.copy('/home/' + self.user + '/Documents/TotPow1.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/TotPow1.fits')
-			os.remove('/home/' + self.user + '/Documents/TotPow1.fits')
+			shutil.copy('/home/' + self.user + '/Documents/Signal_ch1.fits', '/home/' + self.user + '/GNURadio-FFTS/Spectrums/Signal_ch1.fits')
+			os.remove('/home/' + self.user + '/Documents/Signal_ch1.fits')
 			
 			print "Total Power Measurement Done \n"
 				
