@@ -12,7 +12,7 @@ Contents:
    :maxdepth: 2
 
    Introduction.rst
-   USRP_and_GNURadio.rst
+   usrp_gnuradio.rst
    Manual.rst
    Code_explanation.rst
    RfNoc.rst

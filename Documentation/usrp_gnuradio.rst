@@ -59,7 +59,7 @@ Several things can be done to address this issue.
 
 First of all is to check that your hardware is up to speed. Check the CPU load, RAM usage and not least the harddrive. A mechanical drive would allow a sample rate up to about 30 Mhz of I/Q sampling
 depending on the harddrive. The other option would be to use a SSD and it can get you alot higher, however I experienced quite alot of performance issues when running under Linux, with write speeds way below the specifications.
-I eventually abandoned the SSD and right now I'm using Ramdisk, which in theory should have no problem whatsoever for a complex sample rate of 200Mhz (800MB/s).
+I eventually abandoned the SSD and right now I am using Ramdisk, which in theory should have no problem whatsoever for a complex sample rate of 200Mhz (800MB/s).
 
 Other host side improvements that can be done is to expand the socket buffers, setting the governors for your CPU to run at maximum performance and several other parameters.
 More information and instructions on this can be found `here. <https://github.com/EttusResearch/uhd/blob/master/host/docs/usrp_x3x0_config.dox>`_
@@ -71,9 +71,6 @@ Sampling rate decimations
 '''''''''''''''''''''''''
 There are several half band filters incorporated in the Ettus X310 device and some decimations may result in all of them not being activated.
 Those decimations are the uneven ones. For example a sampling frequency of 50 Mhz = 200 Mhz / 4 will have all the half band filters activated.
-Figure 1,2,3 and 4 show examples how this unfolds on Gaussian noise from a receiver. In the first figure 
-And now it is possible to see the 
-This is, for the most part, not very interesting 
 
 Master Clock Rates
 ''''''''''''''''''
