@@ -68,5 +68,4 @@ scale. Due to the simple and elegant nature of SDR platforms
 the back-end solution would also serve as a great
 educational resource and thus be a part in spreading the
 knowledge and importance of atmospheric and interstellar
-measurements, something that is absolutely crucial for
-an environmental aware and curious new generation.
+measurements.

@@ -1,6 +1,8 @@
 Ettus X310 and Gnuradio
 ============================
-Some of the following information can also be applied to other Ettus USRP devices.
+The section explains the Ettus USRP architechture, the GNURadio toolkit and deals with topics such as sampling rates and master clock rates.
+Installation instructions for e.g GNURadio can also be found.
+Most of the following information can be applied to other Ettus USRP devices.
 
 The Ettus USRP
 --------------
