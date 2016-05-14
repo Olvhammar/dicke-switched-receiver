@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-GNU Radio FFTS Documentation
+GNURadio-FFTS Documentation
 =====================================================================
 
 Contents:
@@ -12,7 +12,7 @@ Contents:
    :maxdepth: 2
 
    Introduction.rst
-   USRP_and_Gnuradio.rst
+   USRP_and_GNURadio.rst
    Manual.rst
    Code_explanation.rst
    RfNoc.rst

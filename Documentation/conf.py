@@ -46,7 +46,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'GnuRadioFFTS_Docs'
+project = u'GNURadio-FFTS'
 copyright = u'2016, Simon Olvhammar'
 author = u'Simon Olvhammar'
 
@@ -200,7 +200,7 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'GnuRadioFFTS_Docsdoc'
+htmlhelp_basename = 'GNURadio-FFTS'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -222,7 +222,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'GnuRadioFFTS_Docs.tex', u'GnuRadioFFTS\\_Docs Documentation',
+    (master_doc, 'GNURadio-FFTS.tex', u'GNURadio-FFTS\\ Documentation',
      u'Simon Olvhammar', 'manual'),
 ]
 
@@ -252,7 +252,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'gnuradioffts_docs', u'GnuRadioFFTS_Docs Documentation',
+    (master_doc, 'GNURadio-FFTS_docs', u'GNURadio-FFTS Documentation',
      [author], 1)
 ]
 
@@ -266,8 +266,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'GnuRadioFFTS_Docs', u'GnuRadioFFTS_Docs Documentation',
-     author, 'GnuRadioFFTS_Docs', 'One line description of project.',
+    (master_doc, 'GNURadio-FFTS', u'GNURadio-FFTS Documentation',
+     author, 'GNURadio-FFTS', 'One line description of project.',
      'Miscellaneous'),
 ]
 
