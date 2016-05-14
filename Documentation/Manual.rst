@@ -166,12 +166,12 @@ Interpolate the spike to obtain a clean spectrum.
 	
 Ettus USRP X310 Data sheet
 --------------------------
-..	figure::  images/x300_x310_Spec_Sheet_Sida_1.png
+..	figure::  images/x310_spec1.png
 	:align:	center
 	:width:	1000px
 	:alt:	test
 
-..	figure::  images/x300_x310_Spec_Sheet_Sida_2.png
+..	figure::  images/x310_spec2.png
 	:align:	center
 	:width:	1000px
 	:alt:	test
