@@ -252,7 +252,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'GNURadio-FFTS_docs', u'GNURadio-FFTS Documentation',
+    (master_doc, 'GNURadio-FFTS', u'GNURadio-FFTS Documentation',
      [author], 1)
 ]
 
