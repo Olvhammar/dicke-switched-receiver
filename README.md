@@ -11,5 +11,5 @@ Basic overview:
 - Receiver.py: Gnuradio flowgraph, performs FFT computions as well as real time averaging and saves it to relevant file sinks
 - USRP_start.sh:  GNU Radio optimization script including RAM Disk initialization/PCIe init.
 
-For more information please refer to the documention sub repository. The documentation is generated using sphinx.
+The documentation is generated using sphinx and is published at http://gnuradio-ffts.readthedocs.io/
 Simon Olvhammar
