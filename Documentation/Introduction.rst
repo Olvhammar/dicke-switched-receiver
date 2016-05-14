@@ -45,7 +45,6 @@ platforms, i.e. the Ettus USRP x310 interfaced with the signal processing toolki
 is to act as a informational source and usage manual for employees at Onsala Space Observatory (OSO) using the two GNURadio-FFTSs on the site.
 For that purpose it is mainly the section "Manual" and "USRP and GNURadio" that is relevant.
 
-
 Acknowledgements
 ----------------
 First of all I would like to thank Gunnar Elgered for making this project possible.
@@ -58,11 +57,4 @@ Sweden and around the world.
 Personal background
 -------------------
 I am a bachelor student at Chalmers University of Technology in Sweden and have been, part time, developing a new spectrometer
-solution for Radio Astronomy and Aeronomy. I'm currently pursuing a degree in Master of Wireless and Space Engineering and eventually a Phd.
-
-..	figure::  images/simon.jpg
-	:align:	center
-	:width:	250px
-	:alt:	test
-	
-	Me, Simon Olvhammar at Onsala Space Observatory (20m telescope in background).
+solution for Radio Astronomy and Aeronomy. I am currently pursuing a degree in Master of Wireless and Space Engineering and eventually a Phd.

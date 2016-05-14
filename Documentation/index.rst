@@ -18,6 +18,7 @@ Contents:
    RfNoc.rst
    Results.rst
    References.rst
+   Appendix.rst
 
 Indices and tables
 ==================
