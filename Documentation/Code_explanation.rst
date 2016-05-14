@@ -2,7 +2,7 @@ Code explanation
 ================
 
 This section will give a brief overview of the implementation and the the main python classes, for details please go `here.  <https://github.com/olvhammar/GNURadio-FFTS>`_ The software consists of one socket server module, Server.py, and four classes, Measurement.py, Analyze.py, Receiver.py and finally Finalize.py.
-I have been inspired by the SALSA system, created by Eskil Varenius, and you will find similarites in some modules. The code for the SALSA system can be found
+I have been inspired by the SALSA system, created by Eskil Varenius, and you will find similarites in some modules in the class Analyze.py. The code for the SALSA system can be found
 `here.  <https://github.com/varenius/salsa>`_
 
 USRP_start.sh

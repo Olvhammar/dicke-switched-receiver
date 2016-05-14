@@ -55,17 +55,19 @@ Specifications
 
 **FFT Channels:** 8192*2^(-n), where n zero or positive integer.
 
-**Integration time COO3:** Integer multiples of 5 seconds are accepted for integrations <= 30 seconds
+**Integration time CO-O3:** Integer multiples of 5 seconds are accepted for integrations <= 30 seconds
 Above 30 seconds only integer multiples of 30 seconds is accepted.
 Integrations >= 30 seconds is recommended for switched measurements for optimal processing
 performance.
 Processing time is <= 3% of integration time at 120 MHz. Total power measurements have
-significantly lower processing time <0.3%.
+significantly lower processing time <0.1%.
 
 **Integration time HRC Replacement:** There are no limitations on integration times <= 1000s, above that only integer multiples of 60 seconds accepted (due to RAM-limitations).
 However you can of course make any integration time possible by creating appropriate loops in your control program, i.e. BIFROST.
 Processing time may vary depending on whether switched or unswitched measurements are used. Please use the "state?" command to make sure no overlapping occurs between two measurements.
-Proccessing time guidelines are however less than 3% for switched measurements and significantly lower for SR=DV=1 measurements.
+Proccessing time guidelines are however less than 3% for switched measurements and negligible for SR=DV=1 measurements.
+
+**Note:** The integration time of the CO-O3 will be updated to the same specifications as the HRC Replacement on the next maintenance of the system.
 
 **Center frequency:** Range 400-4400 MHz SBX-120, 10-6000 MHz UBX-160
 
