@@ -130,7 +130,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -170,7 +170,7 @@ A general USRP architecture is
 provided in the figure below, specifics may vary depending on the
 model [5].</p>
 <div class="figure align-center" id="id4">
-<a class="reference internal image-reference" href="_images/usrp_general.png"><img alt="test" src="_images/usrp_general.png" style="width: 500px;" /></a>
+<a class="reference internal image-reference" href="images/usrp_general.png"><img alt="test" src="images/usrp_general.png" style="width: 500px;" /></a>
 <p class="caption"><span class="caption-text">A general Ettus USRP architecture demonstrating
 the signal chain and processing performed. Based on
 the Ettus N210 with daughterboard WBX [5].</span></p>
@@ -246,7 +246,7 @@ It will install both the Ettus UHD software (to interface with the device) and G
 Marcus Leech script can be found <a class="reference external" href="http://gnuradio.org/redmine/projects/gnuradio/wiki/InstallingGRFromSource">here.</a></p>
 <p>The Python Dicke-switching application presented does, however, require atlatest UHD build 3.8.5 in order to work. This due to the fact that
 the GPIO, on the Ettus X310, has only recently been exposed through swig. To update UHD and Gnuradio enter your UHD/Gnuradio directory and perform a git pull on the following repositories:</p>
-<div class="highlight-python"><div class="highlight"><pre>https://github.com/EttusResearch/uhd
+<div class="highlight-python"><div class="highlight"><pre><span></span>https://github.com/EttusResearch/uhd
 https://github.com/gnuradio/gnuradio
 </pre></div>
 </div>
@@ -257,21 +257,21 @@ It is important to update UHD before Gnuradio in order for it to work otherwise 
 <h3>Updating the FPGA image<a class="headerlink" href="#updating-the-fpga-image" title="Permalink to this headline">¶</a></h3>
 <p>Different versions of UHD might require another FPGA image in order to function properly. This is also displayed when trying to initiate the device.
 To get the FPGA image that corresponds to the current running UHD simply run:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo uhd_images_downloader
+<div class="highlight-python"><div class="highlight"><pre><span></span>sudo uhd_images_downloader
 </pre></div>
 </div>
 <p>Thereafter run:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">uhd_image_loader</span> <span class="o">--</span><span class="n">args</span><span class="o">=</span><span class="s2">&quot;type=x300,resource=RIO0,fpga=HGS&quot;</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">uhd_image_loader</span> <span class="o">--</span><span class="n">args</span><span class="o">=</span><span class="s2">&quot;type=x300,resource=RIO0,fpga=HGS&quot;</span>
 </pre></div>
 </div>
 <p>to burn the FPGA image to the device. The above command will automatically identify the correct FPGA image, however the possibility
 to specify the path also exist by simply providing the argument &#8211;fpga-path=&#8221;&lt;path&gt;&#8221;.
 If the command fails try instead to navigate to:</p>
-<div class="highlight-python"><div class="highlight"><pre>/usr/local/lib/uhd/utils
+<div class="highlight-python"><div class="highlight"><pre><span></span>/usr/local/lib/uhd/utils
 </pre></div>
 </div>
 <p>and run:</p>
-<div class="highlight-python"><div class="highlight"><pre>./usrp_x3xx_fpga_burner --type=HGS --resource=RIO0
+<div class="highlight-python"><div class="highlight"><pre><span></span>./usrp_x3xx_fpga_burner --type=HGS --resource=RIO0
 </pre></div>
 </div>
 <p>to burn the FPGA image. The FPGA can also be loaded using JTAG see files.ettus.com/manual for more information.</p>

@@ -120,7 +120,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -151,33 +151,33 @@ Making the spectrometer publically available might be something to consider for 
 <h2>USRP, Computer and Server initialization<a class="headerlink" href="#usrp-computer-and-server-initialization" title="Permalink to this headline">¶</a></h2>
 <p><strong>The USRP device has to be started before the computer in order for the PCIe communication to function properly.</strong>
 After bootup the PCIe drivers for the device has to be turned on. This can be accomplished by the following commands in the terminal:</p>
-<div class="highlight-python"><div class="highlight"><pre>cd /bin/niusrprio-installer
+<div class="highlight-python"><div class="highlight"><pre><span></span>cd /bin/niusrprio-installer
 sudo ./niusrprio_pcie start
 </pre></div>
 </div>
 <p>If the device needs to be turned off issue:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo ./niusrprio_pcie stop
+<div class="highlight-python"><div class="highlight"><pre><span></span>sudo ./niusrprio_pcie stop
 </pre></div>
 </div>
 <p>Before turning it off.
 The radiometer software is located in the home directory under GNURadio-FFTS (Software_HRC for two channel version else Software_COO3) and the socket server is turned on by issuing the following command:</p>
-<div class="highlight-python"><div class="highlight"><pre>python Server.py
+<div class="highlight-python"><div class="highlight"><pre><span></span>python Server.py
 </pre></div>
 </div>
 <p>This will also initialize the USRP and the system is now ready.
 <strong>The listed actions as well as several optimization parameters (including setting up RAM-disk) have been summarized in the script
 USRP_start.sh located in the home folder. Always initiate this script on system reboot.</strong></p>
 <p>The computer can either be controlled locally or remotely. For remote control please generate ssh-keys using ssh-keygen and then issue:</p>
-<div class="highlight-python"><div class="highlight"><pre>ssh-copy-id user@remoteHost
+<div class="highlight-python"><div class="highlight"><pre><span></span>ssh-copy-id user@remoteHost
 </pre></div>
 </div>
 <p>The server can now be accessed through ssh or vnc. The installed vnc server is x11vnc, I recommend using ssvnc for the client which utilize ssh-keys.
 To install ssvnc issue:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo apt-get install tsvnc
+<div class="highlight-python"><div class="highlight"><pre><span></span>sudo apt-get install tsvnc
 </pre></div>
 </div>
 <p>then run:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">ssvnc</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ssvnc</span>
 </pre></div>
 </div>
 <p>in your terminal window. SSVNC is also available for Windows systems.</p>
@@ -208,11 +208,11 @@ Proccessing time guidelines are however less than 3% for switched measurements a
 <div class="section" id="recommended-bandwidths-mhz">
 <h2>Recommended bandwidths [MHz]<a class="headerlink" href="#recommended-bandwidths-mhz" title="Permalink to this headline">¶</a></h2>
 <p><strong>CO-O3 System:</strong></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="mi">120</span>  <span class="mi">60</span>  <span class="mi">30</span>  <span class="mi">20</span>  <span class="mi">15</span>  <span class="mi">12</span>  <span class="mi">10</span>  <span class="mf">7.5</span>  <span class="mi">5</span>  <span class="mf">2.5</span>  <span class="mi">2</span>  <span class="mf">1.5</span>  <span class="mi">1</span>  <span class="mf">0.7</span>  <span class="mf">0.5</span>  <span class="mf">0.3</span>  <span class="mf">0.1</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="mi">120</span>  <span class="mi">60</span>  <span class="mi">30</span>  <span class="mi">20</span>  <span class="mi">15</span>  <span class="mi">12</span>  <span class="mi">10</span>  <span class="mf">7.5</span>  <span class="mi">5</span>  <span class="mf">2.5</span>  <span class="mi">2</span>  <span class="mf">1.5</span>  <span class="mi">1</span>  <span class="mf">0.7</span>  <span class="mf">0.5</span>  <span class="mf">0.3</span>  <span class="mf">0.1</span>
 </pre></div>
 </div>
 <p><strong>HRC Replacement:</strong></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="mi">50</span>  <span class="mi">25</span>  <span class="mi">20</span>  <span class="mi">10</span>  <span class="mi">5</span>  <span class="mf">2.5</span>  <span class="mi">2</span>  <span class="mi">1</span>  <span class="mf">0.8</span>  <span class="mf">0.5</span>  <span class="mf">0.2</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="mi">50</span>  <span class="mi">25</span>  <span class="mi">20</span>  <span class="mi">10</span>  <span class="mi">5</span>  <span class="mf">2.5</span>  <span class="mi">2</span>  <span class="mi">1</span>  <span class="mf">0.8</span>  <span class="mf">0.5</span>  <span class="mf">0.2</span>
 </pre></div>
 </div>
 <p>Listed bandwidths are confirmed for 8k FFT:s. If other bandwidths are desired possibilities exist.
@@ -223,13 +223,13 @@ The upper limit is 50 MHz for the two channel edition GNURadio-FFTS and 120 MHz 
 <div class="section" id="list-of-commands">
 <h2>List of commands<a class="headerlink" href="#list-of-commands" title="Permalink to this headline">¶</a></h2>
 <p>Communication with the FFTS is handled by a socket server. Invalid commands will return an error message. The following commands are accepted.:</p>
-<div class="highlight-python"><div class="highlight"><pre>command value
+<div class="highlight-python"><div class="highlight"><pre><span></span>command value
 e.g
 conf:fft:channels 8192
 </pre></div>
 </div>
 <p><strong>Control:</strong></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">meas</span><span class="p">:</span><span class="n">init</span> <span class="c1">#initilize measurement</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">meas</span><span class="p">:</span><span class="n">init</span> <span class="c1">#initilize measurement</span>
 <span class="n">meas</span><span class="p">:</span><span class="n">adjust</span> <span class="c1">#set gain automatically, se code explanation for detailed information</span>
 <span class="n">meas</span><span class="p">:</span><span class="n">stop</span> <span class="c1">#abort measurement</span>
 <span class="n">conf</span><span class="p">:</span><span class="n">usrp</span><span class="p">:</span><span class="n">bw</span> <span class="c1">#configure Ettus USRP bandwidth</span>
@@ -240,7 +240,7 @@ conf:fft:channels 8192
 </pre></div>
 </div>
 <p><strong>State variables:</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>state? #state of spectrometer i.e. integrating, adjusting, ready
+<div class="highlight-python"><div class="highlight"><pre><span></span>state? #state of spectrometer i.e. integrating, adjusting, ready
 read:settings? #returns configured settings and general information
 conf:usrp:bw? #return configured bandwidth
 conf:usrp:gain? #return USRP gain
@@ -250,7 +250,7 @@ conf:time:obs? #return set integration time
 </pre></div>
 </div>
 <p><strong>Read data CO-O3:</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>meas:read:sig? #read signal spectrum
+<div class="highlight-python"><div class="highlight"><pre><span></span>meas:read:sig? #read signal spectrum
 meas:read:ref? #read reference spectrum
 meas:read:sr? #read signal-reference spectrum
 meas:read:srr? #read (signal-reference)/reference spectrum
@@ -258,7 +258,7 @@ meas:read:hist? #read sample values from latest meas:adjust, plot in a histogram
 </pre></div>
 </div>
 <p><strong>Read data HRC Replacement: (Replace x with desired channel i.e. 0 or 1)</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>meas:read:sig_chx? #read signal spectrum
+<div class="highlight-python"><div class="highlight"><pre><span></span>meas:read:sig_chx? #read signal spectrum
 meas:read:ref_chx? #read reference spectrum
 meas:read:sr_chx? #read signal-reference spectrum
 meas:read:srr_chx? #read (signal-reference)/reference spectrum
@@ -284,10 +284,10 @@ Interpolate the spike to obtain a clean spectrum.</p>
 <div class="section" id="ettus-usrp-x310-data-sheet">
 <h2>Ettus USRP X310 Data sheet<a class="headerlink" href="#ettus-usrp-x310-data-sheet" title="Permalink to this headline">¶</a></h2>
 <div class="figure align-center">
-<a class="reference internal image-reference" href="_images/x300_x310_Spec_Sheet_Sida_1.png"><img alt="test" src="_images/x300_x310_Spec_Sheet_Sida_1.png" style="width: 1000px;" /></a>
+<a class="reference internal image-reference" href="images/x300_x310_Spec_Sheet_Sida_1.png"><img alt="test" src="images/x300_x310_Spec_Sheet_Sida_1.png" style="width: 1000px;" /></a>
 </div>
 <div class="figure align-center">
-<a class="reference internal image-reference" href="_images/x300_x310_Spec_Sheet_Sida_2.png"><img alt="test" src="_images/x300_x310_Spec_Sheet_Sida_2.png" style="width: 1000px;" /></a>
+<a class="reference internal image-reference" href="images/x300_x310_Spec_Sheet_Sida_2.png"><img alt="test" src="images/x300_x310_Spec_Sheet_Sida_2.png" style="width: 1000px;" /></a>
 </div>
 </div>
 <div class="section" id="ubx-160-daughterboard-data-sheet">

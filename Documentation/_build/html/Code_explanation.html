@@ -124,7 +124,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -155,7 +155,7 @@ I have been inspired by the SALSA system, created by Eskil Varenius, and you wil
 <h2>USRP_start.sh<a class="headerlink" href="#usrp-start-sh" title="Permalink to this headline">¶</a></h2>
 <p>This is a optimization and initialization script for the GNURadio-FFTS. Creates RAMDisk for sampled data, optimizes GNURadio by
 configuring network buffers and starts the PCIE interface as well as the FFTS.</p>
-<div class="highlight-python"><div class="highlight"><pre>#!/bin/bash
+<div class="highlight-python"><div class="highlight"><pre><span></span>#!/bin/bash
 #Title: Ettus USRP optimization and storage init
 #Author: Simon Olvhammar
 
@@ -207,7 +207,7 @@ front-ends implementing sky, load or frequency switching.</span></p>
 </div>
 <p>Basically it computes the Fast Fourier Transform (FFT) from the complex sample stream and saves it to file sinks. A in stream averaging procedure is implemented
 through a Single Pole IIR filter. The transfer function can be described by:</p>
-<div class="highlight-python"><div class="highlight"><pre>y(n) = (1-a)y(n-1) + ax(n)
+<div class="highlight-python"><div class="highlight"><pre><span></span>y(n) = (1-a)y(n-1) + ax(n)
 </pre></div>
 </div>
 <p>Which acts as a cheap and convenient way to perform integration. However it does not contain any decimation of it&#8217;s own why a keep 1 N block is introduced.
@@ -221,7 +221,7 @@ is controlled by an external switch and it will transmit this information to the
 <h2>Analyze.py<a class="headerlink" href="#analyze-py" title="Permalink to this headline">¶</a></h2>
 <p>This class stacks all FFT data and performs averaging.
 The switched data is stacked using the function pool.map to better utilize the cores and lower the processing time:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">stack_all_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">stack_all_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
         <span class="n">pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
         <span class="n">spectra</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stack_FFT_file</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
         <span class="n">pool</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
@@ -229,7 +229,7 @@ The switched data is stacked using the function pool.map to better utilize the c
 </pre></div>
 </div>
 <p>Where self.stack_FFT_file is defined by:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c1">#According to https://github.com/varenius/salsa/tree/master/USRP/usrp_gnuradio_dev</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1">#According to https://github.com/varenius/salsa/tree/master/USRP/usrp_gnuradio_dev</span>
 <span class="k">def</span> <span class="nf">stack_FFT_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">):</span>
         <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">memmap</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
         <span class="n">num_spec</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">size</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">fftSize</span><span class="p">)</span> <span class="c1">#The number of spectra contained in the file</span>
@@ -244,7 +244,7 @@ The switched data is stacked using the function pool.map to better utilize the c
 </div>
 <p>Which reads the file containing FFT data and returns one averaged FFT.
 Finally the mean value of the stacked FFTs is calculated:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spectra</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spectra</span><span class="p">):</span>
         <span class="n">sum_spec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">spectra</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sum_spec</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spectra</span><span class="p">))</span>
 </pre></div>

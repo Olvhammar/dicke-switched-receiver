@@ -115,7 +115,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -146,7 +146,7 @@ instead of the host-computer. Some of the benefits include lowering the CPU stre
 <h2>RFNoC<a class="headerlink" href="#rfnoc" title="Permalink to this headline">¶</a></h2>
 <p>RFNoC (RF Network on Chip) is a relatively new concept in GNURadio which allows for, in relation to raw VHDL/Verilog, an easy FPGA implementation of several functions.
 Such as:</p>
-<div class="highlight-python"><div class="highlight"><pre>FFT computations up to 2048 channels
+<div class="highlight-python"><div class="highlight"><pre><span></span>FFT computations up to 2048 channels
 Vector IIR averaging filters, extremely useful for FFT outputs
 Keep one in N function, combined with the IIR filter allows for decimation of the stream and thus data rates
 </pre></div>
@@ -157,7 +157,7 @@ Keep one in N function, combined with the IIR filter allows for decimation of th
 <p>Code have been develop to implement a RFNoC version of the GNURadio-FFTS described here and the flowgraph in figure x
 gives a overview of how the GNURadio-flowgraph in the end would look like.</p>
 <p>Right now there are mainly two points that hinders a update of the system with this new implementation:</p>
-<div class="highlight-python"><div class="highlight"><pre>- Number of FFT-channels, where max for RFNoC is in practice only 2048 with a theoretical max of 4096 (Xilinx coregen based). At OSO we require atleast 8192 channels to achieve the desired resolution.
+<div class="highlight-python"><div class="highlight"><pre><span></span>- Number of FFT-channels, where max for RFNoC is in practice only 2048 with a theoretical max of 4096 (Xilinx coregen based). At OSO we require atleast 8192 channels to achieve the desired resolution.
 - RFNoC requires ethernet equipment which is not in our possession right now.
 </pre></div>
 </div>
