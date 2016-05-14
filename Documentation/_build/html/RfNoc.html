@@ -1,0 +1,241 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>FPGA implementation using RFNoC &mdash; GnuRadioFFTS_Docs 2.7 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="GnuRadioFFTS_Docs 2.7 documentation" href="index.html"/>
+        <link rel="next" title="Results and discussion" href="Results.html"/>
+        <link rel="prev" title="Code explanation" href="Code_explanation.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> GnuRadioFFTS_Docs
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="USRP_and_Gnuradio.html">Ettus X310 and Gnuradio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Manual.html">Spectrometer Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Code_explanation.html">Code explanation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">FPGA implementation using RFNoC</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#rfnoc">RFNoC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gnuradio-ffts-rfnoc-modification">GNURadio-FFTS RFNoC modification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Results.html">Results and discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="References.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">GnuRadioFFTS_Docs</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>FPGA implementation using RFNoC</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/RfNoc.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="fpga-implementation-using-rfnoc">
+<h1>FPGA implementation using RFNoC<a class="headerlink" href="#fpga-implementation-using-rfnoc" title="Permalink to this headline">¶</a></h1>
+<p>The current GNURadio-FFTS only uses the Kintex 7 FPGA of the Ettus x310 as a standard DDC.
+The Kintex 7 however have a great potential and it would be extremely beneficial to perform e.g. the FFT on the FPGA
+instead of the host-computer. Some of the benefits include lowering the CPU stress and data rates.</p>
+<div class="section" id="rfnoc">
+<h2>RFNoC<a class="headerlink" href="#rfnoc" title="Permalink to this headline">¶</a></h2>
+<p>RFNoC (RF Network on Chip) is a relatively new concept in GNURadio which allows for, in relation to raw VHDL/Verilog, an easy FPGA implementation of several functions.
+Such as:</p>
+<div class="highlight-python"><div class="highlight"><pre>FFT computations up to 2048 channels
+Vector IIR averaging filters, extremely useful for FFT outputs
+Keep one in N function, combined with the IIR filter allows for decimation of the stream and thus data rates
+</pre></div>
+</div>
+</div>
+<div class="section" id="gnuradio-ffts-rfnoc-modification">
+<h2>GNURadio-FFTS RFNoC modification<a class="headerlink" href="#gnuradio-ffts-rfnoc-modification" title="Permalink to this headline">¶</a></h2>
+<p>Code have been develop to implement a RFNoC version of the GNURadio-FFTS described here and the flowgraph in figure x
+gives a overview of how the GNURadio-flowgraph in the end would look like.</p>
+<p>Right now there are mainly two points that hinders a update of the system with this new implementation:</p>
+<div class="highlight-python"><div class="highlight"><pre>- Number of FFT-channels, where max for RFNoC is in practice only 2048 with a theoretical max of 4096 (Xilinx coregen based). At OSO we require atleast 8192 channels to achieve the desired resolution.
+- RFNoC requires ethernet equipment which is not in our possession right now.
+</pre></div>
+</div>
+<p>The ethernet equipment is obviously not the biggest problem since we can aquire that but the FFT is trickier.
+There is basically two things that needs be updated in order for a 8k channel FFT to be implemented in RFNoC. One: the Xilinx coregen based FPGA FFT implementation
+needs to be updated to 8k channels. And secondly the GNURadio developers needs to add support for fragmentation of vectors in RFNoC which is why only 2048 channel FFT is possible in RFNoC right now.
+I have however spoken to several of them and an update is expected and it is on their todolist. It should also be noted that RFNoC is yet in it&#8217;s alpha stage of development rendering instability as possible problem as well.
+I expect that within one year a 8k FFT in RFNoC is implemented and thus the GNURadio-FFTS can be implemented on the FPGA of the Ettus X310 instead of the host computer.
+This is useful for the COO3 where high bandwidths are desired, for the HRC replacement system the benefits</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Results.html" class="btn btn-neutral float-right" title="Results and discussion" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Code_explanation.html" class="btn btn-neutral" title="Code explanation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Simon Olvhammar.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.7',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,270 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Results and discussion &mdash; GnuRadioFFTS_Docs 2.7 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="GnuRadioFFTS_Docs 2.7 documentation" href="index.html"/>
+        <link rel="next" title="References" href="References.html"/>
+        <link rel="prev" title="FPGA implementation using RFNoC" href="RfNoc.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> GnuRadioFFTS_Docs
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="USRP_and_Gnuradio.html">Ettus X310 and Gnuradio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Manual.html">Spectrometer Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Code_explanation.html">Code explanation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RfNoc.html">FPGA implementation using RFNoC</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Results and discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="References.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">GnuRadioFFTS_Docs</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Results and discussion</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/Results.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="results-and-discussion">
+<h1>Results and discussion<a class="headerlink" href="#results-and-discussion" title="Permalink to this headline">¶</a></h1>
+<p>A double side band heterodyne receiver front-end designed
+at Onsala Space Space Observatory, optimized for
+retrieval of mesospheric O3 and CO, is used to test the
+GNU-Radio and Ettus USRP Dicke-switched back-end.
+An overview of the full receiver chain is provided by the
+flow graph in Fig. 3. Details of the receiver front-end and
+it’s performance is outlined in [8].
+The back-end consist of the Ettus USRP X310 with the
+SBX daughterboard and a host computer providing the
+GNU Radio interface. The system is used in frequencyswitched
+mode where the external LO 1 in Fig. 3 is
+rapidly switched, approximately 1 Hz, between two frequencies
+corresponding to the signal and reference states.
+A sync bus transmits signals to the GPIO of the Ettus
+USRP X310 indicating the state of the received RF, signal
+or reference, as well as the transition state of the RF.
+Fig. 4 shows uncalibrated spectral data of a simultaneous
+measurement of frequency switched O3 at 110.84 GHz
+and CO at 115.27 GHz averaged over approximately one
+week. The bandwidth is 60 MHz with a resolution of
+about 15 kHz and the frequency throw between signal
+and reference is 8 MHz. The O3 line corresponds to the
+lower side band of the IF-output and the narrow CO line
+corresponds to upper side band.
+The vertical distribution of the observed mesospheric CO
+and O3 can be retrieved by applying the Optimal Estima-
+tion Method (OEM) described in [7]. A Hot/Cold calibration
+procedure is outlined and described in [8].</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="_images/DSB3mm_SimonO.png"><img alt="test" src="_images/DSB3mm_SimonO.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Figure 3. Flow graph describing the receiving chain i.e.
+a front-end optimized for CO and O3 retrieval [8]. The
+back-end consists of the Ettus USRP with host software
+interface GNU Radio providing a general purpose Dicke-switched
+FFT spectrometer.</span></p>
+</div>
+<div class="figure align-center" id="id2">
+<a class="reference internal image-reference" href="_images/spectrum_article.png"><img alt="test" src="_images/spectrum_article.png" style="width: 1000px;" /></a>
+<p class="caption"><span class="caption-text">Figure 4. Uncalibrated frequency-switched measurement
+of CO at 115.27 GHz and O3 at 110.84 GHz using Ettus
+USRP and GNU Radio as back-end.</span></p>
+</div>
+<p>The results show that a high performing Dicke-switched
+back-end can be achieved using the Ettus USRP and a
+simple GNU Radio application based on free and open
+source software. The back-end can easily be integrated
+in existing front-ends as shown in the results where a
+state of the art COO3 front-end was combined with the
+back-end. Thus providing both the radio-aeronomy and
+astronomy society a back-end that is easily integrated in
+new or existing systems with minimal efforts and investments.
+With simple, cost effective and high performing
+solutions, like the one proposed, a greater distribution
+of microwave radiometer systems performing quality
+Dicke-switched measurements can be expected. This
+opens for e.g atmospheric monitoring on a whole new
+scale. Due to the simple and elegant nature of SDR platforms
+the back-end solution would also serve as a great
+educational resource and thus be a part in spreading the
+knowledge and importance of atmospheric and interstellar
+measurements, something that is absolutely crucial for
+an environmental aware and curious new generation.</p>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="References.html" class="btn btn-neutral float-right" title="References" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="RfNoc.html" class="btn btn-neutral" title="FPGA implementation using RFNoC" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Simon Olvhammar.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.7',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+Spectrometer Manual
+===================
+
+Here I will provide a usage manual for the spectrometer. For now this only applies to employees at Onsala Space Observatory (OSO). 
+Making the spectrometer publically available might be something to consider for the future. Until then I encourage you to try out OSO:s
+`Small Radio Telescopes.  <http://vale.oso.chalmers.se/salsa/>`_
+
+USRP, Computer and Server initialization
+----------------------------------------
+**The USRP device has to be started before the computer in order for the PCIe communication to function properly.**
+After bootup the PCIe drivers for the device has to be turned on. This can be accomplished by the following commands in the terminal::
+
+	cd /bin/niusrprio-installer
+	sudo ./niusrprio_pcie start
+	
+If the device needs to be turned off issue::
+
+	sudo ./niusrprio_pcie stop
+	
+Before turning it off.
+The radiometer software is located in the home directory and the socket server is turned on by issuing the following command::
+
+	python Server.py
+	
+This will also initialize the USRP and the system is now ready.
+**The listed actions as well as several optimization parameters (including setting up RAM-disk) have been summarized in the script
+USRP_start.sh located in "~/Documents/ShellScripts". Always initiate this script on system reboot, followed by starting the spectrometer with python Server.py.**
+
+Specifications
+--------------
+**OS** Ubuntu 15.10 Desktop
+
+**Back-end:** Ettus USRP X310 Motherboard + SBX(120MHz)/UBX(160MHz) Daughterboard
+
+**Interface:** GNU Radio with UHD version 3.9.0
+
+**IP/PORT**: Se internal docs
+
+**A/D Master Clock Rate** = 120 MHz (Configurable at host i.e 184.32 MHz, 200 MHz)
+
+**FFT Channels:** 8192*2^(-n), where n zero or positive integer.
+
+**Integration time:** There are no limitations on integration times <= 1000s, above that only integer multiples of 30 seconds accepted (due to RAM-limitations).
+However you can of course make any integration time possible by creating appropriate loops in your control program.
+Processing time is <= 3% of integration time at 120 MHz. Total power measurements have
+significantly lower processing time <0.3%.
+
+**Center frequency:** Range 400-4400 MHz SBX, 10-6000 MHz UBX
+
+**USRP Gain settings:** Range 0-31.5 dB (automatic adjustment recommended)
+
+**Clock source:** External
+
+**Time source:** Ettus USRP Internal (alt external, GPSDO)
+
+Recommended bandwidths [MHz]
+----------------------------
+
+.. code-block:: python
+
+	120  60  30  20  15  12  10  7.5  5  2.5  2  1.5  1  0.7  0.5  0.3  0.1
+	
+Listed bandwidths are confirmed for 8k FFT:s. If other bandwidths are desired possibilities exist.
+Note: Switched measurements have confirmed functionality for bandwidths >= 20 MHz. **Switched functionality is not
+guaruanteed below 20 MHz**, this is due to the fact that round trip delay increases with lower sampling rates.
+
+List of commands
+----------------
+Communication with the FFTS is handled by a socket server. The following commands are accepted.
+Invalid commands will return an error message. For configuration commands the following syntax applies::
+
+	command value
+	e.g
+	conf:fft:channels 8192
+
+**Control:**
+
+.. code-block:: python
+
+	meas:init #initilize measurement
+	meas:adjust #set gain automatically, se code explanation for detailed information
+	meas:stop #abort measurement
+	set:mode:switched #set switched mode, default
+	set:mode:totpow #set total power mode
+	conf:usrp:bw #configure Ettus USRP bandwidth
+	conf:time:obs #integration time
+	conf:fft:channels #configure FFT channels
+	conf:usrp:cfreq #configure center frequency
+	conf:usrp:gain #manual gain setting
+
+**State variables:**
+
+.. code-block:: python
+
+	state? #state of spectrometer i.e. integrating, adjusting, ready
+	read:settings? #returns configured settings and general information
+	conf:usrp:bw? #return configured bandwidth
+	conf:usrp:gain? #return USRP gain
+	conf:usrp:cfreq? #return center frequency
+	conf:fft:channels? #return FFT channels
+	conf:time:obs? #return set integration time
+
+**Read data:**
+
+.. code-block:: python
+
+	meas:read:sig? #read signal spectrum
+	meas:read:ref? #read reference spectrum
+	meas:read:sr? #read signal-reference spectrum
+	meas:read:srr? #read (signal-reference)/reference spectrum
+	meas:read:totpow? #read total power spectrum
+	meas:read:hist? #read sample values from latest meas:adjust, plot in a histogram to observe the sample distribution
+
+Effective bandwidth and offsets
+--------------------------------
+The figure shows an example of a power spectrum at 120 MHz. Observe the filter roll off at band
+edges, implies that effective bandwidth is less than theoretical set bandwidth. In this case a
+configured bandwidth of 120 MHz quadrature returns approximately an effective bandwidth of 105
+MHz.
+Ettus lists an effective bandwidth of approximately 80% of the Nyquist bandwidth which seems to
+be in accordance to the experimental results. E.g a set bandwidth of 20 MHz (+-10MHz from
+center) will result in an effective bandwidth of approximately 16 MHz (+-8MHz from center).
+Raw data may contain a center spike due to DC offset in the A/D converters, as shown in the figure.
+Interpolate the spike to obtain a clean spectrum.
+
+..	figure::  images/filterrolloff.png
+	:align:	center
+	:width:	500px
+	:alt:	test
+
+
+
+

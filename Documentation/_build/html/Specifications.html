@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Spectrometer Specifications &mdash; GnuRadioFFTS_Docs 2.7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="GnuRadioFFTS_Docs 2.7 documentation" href="index.html" />
+    <link rel="next" title="Code explanation" href="Code_explanation.html" />
+    <link rel="prev" title="Spectrometer Manual" href="Manual.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Code_explanation.html" title="Code explanation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Manual.html" title="Spectrometer Manual"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">GnuRadioFFTS_Docs 2.7 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Spectrometer Specifications</a><ul>
+<li><a class="reference internal" href="#recommended-bandwidths-mhz">Recommended bandwidths [MHz]</a></li>
+<li><a class="reference internal" href="#list-of-commands">List of commands</a></li>
+<li><a class="reference internal" href="#effective-bandwidth-and-offsets">Effective bandwidth and offsets</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Manual.html"
+                        title="previous chapter">Spectrometer Manual</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Code_explanation.html"
+                        title="next chapter">Code explanation</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Specifications.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="spectrometer-specifications">
+<h1>Spectrometer Specifications<a class="headerlink" href="#spectrometer-specifications" title="Permalink to this headline">¶</a></h1>
+<p><strong>Back-end:</strong> Ettus USRP Motherboard + SBX(120MHz)/UBX(160MHz) Daughterboard</p>
+<p><strong>Interface:</strong> GNU Radio with UHD version 3.9.0</p>
+<p><strong>IP/PORT</strong>: Se internal docs</p>
+<p><strong>A/D Master Clock Rate</strong> = 120 MHz (Configurable at host i.e 184.32 MHz, 200 MHz)</p>
+<p><strong>FFT Channels:</strong> 8192*2^(-n), where n zero or positive integer.</p>
+<p><strong>Integration time:</strong> Integer multiples of 5 seconds are accepted for integrations &lt;= 30 seconds
+Above 30 seconds only integer multiples of 30 seconds is accepted.
+Integrations &gt;= 30 seconds is recommended for switched measurements for optimal processing
+performance.
+Processing time is &lt;= 3% of integration time at 120 MHz. Total power measurements have
+significantly lower processing time &lt;0.3%.</p>
+<p><strong>Center frequency:</strong> Range 400-4400 MHz</p>
+<p><strong>USRP Gain settings:</strong> Range 0-31.5 dB (automatic adjustment recommended)</p>
+<p><strong>Clock source:</strong> External</p>
+<p><strong>Time source:</strong> Ettus USRP Internal (alt external, GPSDO)</p>
+<div class="section" id="recommended-bandwidths-mhz">
+<h2>Recommended bandwidths [MHz]<a class="headerlink" href="#recommended-bandwidths-mhz" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="mi">120</span>  <span class="mi">60</span>  <span class="mi">30</span>  <span class="mi">20</span>  <span class="mi">15</span>  <span class="mi">12</span>  <span class="mi">10</span>  <span class="mf">7.5</span>  <span class="mi">5</span>  <span class="mf">2.5</span>  <span class="mi">2</span>  <span class="mf">1.5</span>  <span class="mi">1</span>  <span class="mf">0.7</span>  <span class="mf">0.5</span>  <span class="mf">0.3</span>  <span class="mf">0.1</span>
+</pre></div>
+</div>
+<p>Listed bandwidths are confirmed for 8k FFT:s. If other bandwidths are desired possibilities exist.
+Note: Switched measurements have confirmed functionality for bandwidths &gt;= 20 MHz</p>
+</div>
+<div class="section" id="list-of-commands">
+<h2>List of commands<a class="headerlink" href="#list-of-commands" title="Permalink to this headline">¶</a></h2>
+<p>Communication with the FFTS is handled by a socket server. The following commands are accepted.
+Invalid commands will return an error message. For configuration commands the following syntax applies:</p>
+<div class="highlight-python"><div class="highlight"><pre>command value
+e.g
+conf:fft:channels 8192
+</pre></div>
+</div>
+<p><strong>Control:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">meas</span><span class="p">:</span><span class="n">init</span> <span class="c1">#initilize measurement</span>
+<span class="n">meas</span><span class="p">:</span><span class="n">adjust</span> <span class="c1">#set gain automatically</span>
+<span class="n">meas</span><span class="p">:</span><span class="n">stop</span> <span class="c1">#abort measurement</span>
+<span class="nb">set</span><span class="p">:</span><span class="n">mode</span><span class="p">:</span><span class="n">switched</span> <span class="c1">#set switched mode, default</span>
+<span class="nb">set</span><span class="p">:</span><span class="n">mode</span><span class="p">:</span><span class="n">totpow</span> <span class="c1">#set total power mode</span>
+<span class="n">conf</span><span class="p">:</span><span class="n">usrp</span><span class="p">:</span><span class="n">bw</span> <span class="c1">#configure Ettus USRP bandwidth</span>
+<span class="n">conf</span><span class="p">:</span><span class="n">time</span><span class="p">:</span><span class="n">obs</span> <span class="c1">#integration time</span>
+<span class="n">conf</span><span class="p">:</span><span class="n">fft</span><span class="p">:</span><span class="n">channels</span> <span class="c1">#configure FFT channels</span>
+<span class="n">conf</span><span class="p">:</span><span class="n">usrp</span><span class="p">:</span><span class="n">cfreq</span> <span class="c1">#configure center frequency</span>
+<span class="n">conf</span><span class="p">:</span><span class="n">usrp</span><span class="p">:</span><span class="n">gain</span> <span class="c1">#manual gain setting</span>
+</pre></div>
+</div>
+<p><strong>State variables:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre>state? #state of spectrometer i.e. integrating, adjusting, ready
+read:settings? #returns configured settings and general information
+conf:usrp:bw? #return configured bandwidth
+conf:usrp:gain? #return USRP gain
+conf:usrp:cfreq? #return center frequency
+conf:fft:channels? #return FFT channels
+conf:time:obs? #return set integration time
+</pre></div>
+</div>
+<p><strong>Read data:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre>meas:read:sig? #read signal spectrum
+meas:read:ref? #read reference spectrum
+meas:read:sr? #read signal-reference spectrum
+meas:read:srr? #read (signal-reference)/reference spectrum
+meas:read:totpow? #read total power spectrum
+meas:read:hist? #read sample values from latest meas:adjust, plot in a histogram to observe the sample distribution
+</pre></div>
+</div>
+</div>
+<div class="section" id="effective-bandwidth-and-offsets">
+<h2>Effective bandwidth and offsets<a class="headerlink" href="#effective-bandwidth-and-offsets" title="Permalink to this headline">¶</a></h2>
+<p>The figure shows an example of a power spectrum at 120 MHz. Observe the filter roll off at band
+edges, implies that effective bandwidth is less than theoretical set bandwidth. In this case a
+configured bandwidth of 120 MHz quadrature returns approximately an effective bandwidth of 105
+MHz.
+Ettus lists an effective bandwidth of approximately 80% of the Nyquist bandwidth which seems to
+be in accordance to the experimental results. E.g a set bandwidth of 20 MHz (+-10MHz from
+center) will result in an effective bandwidth of approximately 16 MHz (+-8MHz from center).
+Raw data may contain a center spike due to DC offset in the A/D converters, as shown in the figure.
+Interpolate the spike to obtain a clean spectrum.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/filterrolloff.png"><img alt="test" src="_images/filterrolloff.png" style="width: 500px;" /></a>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Code_explanation.html" title="Code explanation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Manual.html" title="Spectrometer Manual"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">GnuRadioFFTS_Docs 2.7 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Simon Olvhammar.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
+    </div>
+  </body>
+</html>

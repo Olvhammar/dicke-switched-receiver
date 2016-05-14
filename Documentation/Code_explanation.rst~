@@ -1,0 +1,83 @@
+Code explanation
+================
+
+The software consists of one socket server module, Server.py, and four classes, Measurement.py, Analyze.py, Receiver.py and finally Finalize.py.
+I have been inspired by the SALSA system, created by Eskil Varenius, and you will find similarites in some modules. The code for the SALSA system can be found
+`here.  <https://github.com/varenius/salsa>`_
+
+Server.py
+---------
+This module is a socket server used to communicate with the receiver. I will not get into how I created the socket server but instead explain the important parts for the dicke-switching implementation.
+To ensure the RAM wont run out the measurement is divided into 20 seconds intervals.
+So for example a entered observation time of 300s will result in 300/15=20 measurements. After each measurement the data is stacked and the RAM gets cleared, this is handled by the class Analyze.
+The delay will depend on the sample rate and the FFT channels. For example a sample rate of 50 Mhz with 4096 points will have a delay time of about 0.8 seconds.
+After the stacking and clearing is complete a option is presented to interpolate the center DC offset spike. The final stacking for each interval is performed in the Finalize class and the Reciever and socket connections is then terminated. 
+
+Measurement.py
+--------------
+This is the most important class in the application since this is the base for the Dicke-switching.
+This class controls the Gnuradio flowgraph, Receiver.py, in order to separate the samples corresponding to signal or reference. 
+It also contains functions such as automatic gain adjustment.
+
+
+
+Receiver.py
+-----------
+Receiver.py is the Gnuradio flowgraph and is best explained using a gnuradio-companion flowgraph
+
+
+Basically it computes the Fast Fourier Transform (FFT) from the complex sample stream and saves it to file sinks.
+The stream selector at the sink side is fundamental for the Dicke-switching implementation. The stream will be switched based on the state of RF input. This state, signal or reference,
+is controlled by an external switch and it will transmit this information to the GPIO front panel. How this is done in Python can be seen in Measurement.py
+
+Analyze.py
+----------
+This class stacks all FFT data and performs averaging.
+The switched data is stacked using the function pool.map to better utilize the cores and lower the processing time::
+
+	def stack_all_data(self, files):
+		pool = Pool(processes=2)
+		spectra = pool.map(self.stack_FFT_file, files)
+		pool.terminate()
+		return spectra
+		
+Where self.stack_FFT_file is defined by::
+	
+	#According to https://github.com/varenius/salsa/tree/master/USRP/usrp_gnuradio_dev
+	def stack_FFT_file(self, infile):
+		signal = np.memmap(infile, mode = 'r', dtype = np.float32)
+		num_spec = int(signal.size/self.fftSize) #The number of spectra contained in the file
+		length = num_spec*self.fftSize 
+		signal = signal[0:length] #Convert the array to an even number of spectras
+		spec = signal.reshape((num_spec, self.fftSize)) #Reshape the array with FFT:s so it can be easily stacked
+		spec = spec.sum(axis=0) #Stack the FFT:s
+		spec = spec/(1.0*num_spec) #Average Spectrum
+		del signal
+		return spec
+		
+Which basically reads the file containing FFT data and returns one averaged FFT.
+Finally the mean value of the stacked FFTs is calculated by::
+
+	def mean(self, spectra):
+		sum_spec = np.sum(spectra, axis=0, dtype = np.float32)
+		return sum_spec/float(len(spectra))
+		
+Finalize.py
+-----------
+
+Improvements and other toughts
+------------------------------
+Things I would like to improve, any input would be greatly appreciated.
+
+Processing delays
+'''''''''''''''''
+The measurements are done in intervals of 30 seconds, this due to RAM storage limitations.
+Depending on the desired bandwidth the stacking process can take up to 3% of the total measure time, thus introducing a short processing delay between the measurements.
+I have greatly reduced the stacking time by the use of threads (i.e. pool.map), however I would like to run the stacking in the background so the stacking procedure can be performed during runtime.
+
+Alternatives to sync bus switching
+''''''''''''''''''''''''''''''''''
+Currently the mixer in the front-end of the system is controlled by a sync bus, which in turn sends the state signals (sig or ref) to the GPIO of the Ettus USRP.
+The optimal method, with GNU Radios unpredictable processing delay in mind, would be to instead having the software
+controlling the mixer instead of external hardware. This would allow for precise sample timing and thus I would be able to remove short delay I have introduced to make sure FFTs do not overlap.
+ 

@@ -1,0 +1,102 @@
+Spectrometer Specifications
+===========================
+
+**Back-end:** Ettus USRP Motherboard + SBX(120MHz)/UBX(160MHz) Daughterboard
+
+**Interface:** GNU Radio with UHD version 3.9.0
+
+**IP/PORT**: Se internal docs
+
+**A/D Master Clock Rate** = 120 MHz (Configurable at host i.e 184.32 MHz, 200 MHz)
+
+**FFT Channels:** 8192*2^(-n), where n zero or positive integer.
+
+**Integration time:** Integer multiples of 5 seconds are accepted for integrations <= 30 seconds
+Above 30 seconds only integer multiples of 30 seconds is accepted.
+Integrations >= 30 seconds is recommended for switched measurements for optimal processing
+performance.
+Processing time is <= 3% of integration time at 120 MHz. Total power measurements have
+significantly lower processing time <0.3%.
+
+**Center frequency:** Range 400-4400 MHz
+
+**USRP Gain settings:** Range 0-31.5 dB (automatic adjustment recommended)
+
+**Clock source:** External
+
+**Time source:** Ettus USRP Internal (alt external, GPSDO)
+
+Recommended bandwidths [MHz]
+----------------------------
+
+.. code-block:: python
+
+	120  60  30  20  15  12  10  7.5  5  2.5  2  1.5  1  0.7  0.5  0.3  0.1
+	
+Listed bandwidths are confirmed for 8k FFT:s. If other bandwidths are desired possibilities exist.
+Note: Switched measurements have confirmed functionality for bandwidths >= 20 MHz
+
+List of commands
+----------------
+Communication with the FFTS is handled by a socket server. The following commands are accepted.
+Invalid commands will return an error message. For configuration commands the following syntax applies::
+
+	command value
+	e.g
+	conf:fft:channels 8192
+
+**Control:**
+
+.. code-block:: python
+
+	meas:init #initilize measurement
+	meas:adjust #set gain automatically
+	meas:stop #abort measurement
+	set:mode:switched #set switched mode, default
+	set:mode:totpow #set total power mode
+	conf:usrp:bw #configure Ettus USRP bandwidth
+	conf:time:obs #integration time
+	conf:fft:channels #configure FFT channels
+	conf:usrp:cfreq #configure center frequency
+	conf:usrp:gain #manual gain setting
+
+**State variables:**
+
+.. code-block:: python
+
+	state? #state of spectrometer i.e. integrating, adjusting, ready
+	read:settings? #returns configured settings and general information
+	conf:usrp:bw? #return configured bandwidth
+	conf:usrp:gain? #return USRP gain
+	conf:usrp:cfreq? #return center frequency
+	conf:fft:channels? #return FFT channels
+	conf:time:obs? #return set integration time
+
+**Read data:**
+
+.. code-block:: python
+
+	meas:read:sig? #read signal spectrum
+	meas:read:ref? #read reference spectrum
+	meas:read:sr? #read signal-reference spectrum
+	meas:read:srr? #read (signal-reference)/reference spectrum
+	meas:read:totpow? #read total power spectrum
+	meas:read:hist? #read sample values from latest meas:adjust, plot in a histogram to observe the sample distribution
+
+Effective bandwidth and offsets
+--------------------------------
+The figure shows an example of a power spectrum at 120 MHz. Observe the filter roll off at band
+edges, implies that effective bandwidth is less than theoretical set bandwidth. In this case a
+configured bandwidth of 120 MHz quadrature returns approximately an effective bandwidth of 105
+MHz.
+Ettus lists an effective bandwidth of approximately 80% of the Nyquist bandwidth which seems to
+be in accordance to the experimental results. E.g a set bandwidth of 20 MHz (+-10MHz from
+center) will result in an effective bandwidth of approximately 16 MHz (+-8MHz from center).
+Raw data may contain a center spike due to DC offset in the A/D converters, as shown in the figure.
+Interpolate the spike to obtain a clean spectrum.
+
+..	figure::  images/filterrolloff.png
+	:align:	center
+	:width:	500px
+	:alt:	test
+

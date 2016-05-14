@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction &mdash; GnuRadioFFTS_Docs 2.7 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="GnuRadioFFTS_Docs 2.7 documentation" href="index.html"/>
+        <link rel="next" title="Ettus X310 and Gnuradio" href="USRP_and_Gnuradio.html"/>
+        <link rel="prev" title="GNU Radio FFTS Documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> GnuRadioFFTS_Docs
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#personal-background">Personal background</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="USRP_and_Gnuradio.html">Ettus X310 and Gnuradio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Manual.html">Spectrometer Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Code_explanation.html">Code explanation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RfNoc.html">FPGA implementation using RFNoC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Results.html">Results and discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="References.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">GnuRadioFFTS_Docs</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Introduction</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/Introduction.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>Software defined radio (SDR) was initially introduced by
+J.Mitola in 1995 [1]. It can be described as a radio that
+can change it’s physical equivalance through modifications
+in software. Since the work of Mitola SDRs has
+obtained a key role in the development of new radio systems
+[2] which is in part motivated by the high flexibility
+and cost effectiveness that a digital solution yields [3].
+The main supplier for SDRs today is the Ettus Research
+and National Instruments company (NI) providing the
+Universal Software Radio Peripheral (USRP) as the SDR
+product line [4]. The SDR platform essentially provides
+a front-end for discretization of the signal as well as a
+Digital Down Donverter (DDC) chain through the usage
+of a Field-Programmable Gate Array (FPGA) [5]. The
+strength and flexibility of the USRP is exposed when
+combined with software interfaces such as GNU Radio
+and NI-LabView, providing digital domain signal processing
+[6].</p>
+<p>Studies of microwave spectral emission from different
+kinds of molecules is fundamental in the fields of Astronomy
+and Aeronomy. Hydrogen is the most common
+substance in the Universe thus making the transition at
+21 cm of central interest to astronomers, e.g. for studies
+of galactic spiral arms. Microwave radiation
+is also abundant from different gases in the atmosphere,
+both CO, O2, H2O and O3 exhibit rotational transitions
+below 150 GHz thus providing a way to study the concentration
+and distribution of these gases in the atmosphere
+[7]. The technique most commonly used, for these kinds
+of studies and observations is Dicke-switching, first introduced
+by physicist Robert H. Dicke. Dicke-switching
+is a method that eliminates gain variations in receiver systems
+by rapidly comparing signals, often labelled signal
+and reference. The reference can be a source of known
+temperature, another part of the sky or by defining a reference
+through mixer tuning. The techniques are referred
+to as load, sky and frequency-switching respectively [8].</p>
+<p>This documentation briefly explains how a general purpose Dicke-switched Fast Fourier Transform Spectrometer (FFTS) can be achieved using Software Defined Radio (SDR)
+platforms, i.e. the Ettus USRP x310 interfaced with the signal processing toolkit GNU Radio. However the main function of this documentation
+is to act as a informational source and usage manual for employees at Onsala Space Observatory (OSO) using the two GNURadio-FFTSs on the site.
+For that purpose it is mainly the section &#8220;Manual&#8221; and &#8220;USRP and GNURadio&#8221; that is relevant.</p>
+<div class="section" id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h2>
+<p>First of all I would like to thank Gunnar Elgered for making this project possible.
+I would also like to thank Lars Petersson and Peter Forkman for supervising the project and providing me with wonderful insights and supporting me at all times.
+The SALSA system has been a inspirational source throughout this project and I have Eskil Varenius to thank for that.
+Mikael Lerner has played a fundemental role in integrating the spectrometer in existing systems and it&#8217;s now continous usage would not have happend without him.
+The spectrometer is fully integrated in his software package BIFROST, providing a truly great interface for Radiometers in
+Sweden and around the world.</p>
+</div>
+<div class="section" id="personal-background">
+<h2>Personal background<a class="headerlink" href="#personal-background" title="Permalink to this headline">¶</a></h2>
+<p>I am a bachelor student at Chalmers University of Technology in Sweden and have been, part time, developing a new spectrometer
+solution for Radio Astronomy and Aeronomy. I&#8217;m currently pursuing a degree in Master of Wireless and Space Engineering and eventually a Phd.</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="_images/simon.jpg"><img alt="test" src="_images/simon.jpg" style="width: 250px;" /></a>
+<p class="caption"><span class="caption-text">Me, Simon Olvhammar at Onsala Space Observatory (20m telescope in background).</span></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="USRP_and_Gnuradio.html" class="btn btn-neutral float-right" title="Ettus X310 and Gnuradio" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="GNU Radio FFTS Documentation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Simon Olvhammar.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.7',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

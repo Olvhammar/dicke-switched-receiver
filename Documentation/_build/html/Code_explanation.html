@@ -1,0 +1,343 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Code explanation &mdash; GnuRadioFFTS_Docs 2.7 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="GnuRadioFFTS_Docs 2.7 documentation" href="index.html"/>
+        <link rel="next" title="FPGA implementation using RFNoC" href="RfNoc.html"/>
+        <link rel="prev" title="Spectrometer Manual" href="Manual.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> GnuRadioFFTS_Docs
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="USRP_and_Gnuradio.html">Ettus X310 and Gnuradio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Manual.html">Spectrometer Manual</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Code explanation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#usrp-start-sh">USRP_start.sh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#server-py">Server.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#measurement-py">Measurement.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#receiver-py">Receiver.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#analyze-py">Analyze.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#finalize-py">Finalize.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#improvements-and-other-toughts">Improvements and other toughts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#processing-delays">Processing delays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alternatives-to-sync-bus-switching">Alternatives to sync bus switching</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="RfNoc.html">FPGA implementation using RFNoC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Results.html">Results and discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="References.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">GnuRadioFFTS_Docs</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Code explanation</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/Code_explanation.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="code-explanation">
+<h1>Code explanation<a class="headerlink" href="#code-explanation" title="Permalink to this headline">¶</a></h1>
+<p>This section will give a brief overview of the implementation and the the main python classes, for details please go <a class="reference external" href="https://github.com/olvhammar/GNURadio-FFTS">here.</a> The software consists of one socket server module, Server.py, and four classes, Measurement.py, Analyze.py, Receiver.py and finally Finalize.py.
+I have been inspired by the SALSA system, created by Eskil Varenius, and you will find similarites in some modules. The code for the SALSA system can be found
+<a class="reference external" href="https://github.com/varenius/salsa">here.</a></p>
+<div class="section" id="usrp-start-sh">
+<h2>USRP_start.sh<a class="headerlink" href="#usrp-start-sh" title="Permalink to this headline">¶</a></h2>
+<p>This is a optimization and initialization script for the GNURadio-FFTS. Creates RAMDisk for sampled data, optimizes GNURadio by
+configuring network buffers and starts the PCIE interface as well as the FFTS.</p>
+<div class="highlight-python"><div class="highlight"><pre>#!/bin/bash
+#Title: Ettus USRP optimization and storage init
+#Author: Simon Olvhammar
+
+#Create and mount RAMDisk
+sudo mkdir /tmp/ramdisk
+sudo chmod 777 /tmp/ramdisk
+sudo mount -t tmpfs -o size=16384M tmpfs /tmp/ramdisk
+
+# Configure Network Buffers
+sudo sysctl -w net.core.rmem_max=33554432
+sudo sysctl -w net.core.wmem_max=33554432
+
+# Initalize Ettus USRP PCIe drivers
+sudo ~/bin/niusrprio-installer/niusrprio_pcie start
+
+#Message to User
+echo &quot;Ettus USRP PCIe drivers activated&quot;
+echo &quot;RAMDisk is 8GB in size and located at /tmp/ramdisk&quot;
+echo &quot;Starting GNURadio-FFTS...&quot;
+#Start FFTS
+python /home/olvhammar/GNURadio-FFTS/Software_HRC/Server.py
+</pre></div>
+</div>
+</div>
+<div class="section" id="server-py">
+<h2>Server.py<a class="headerlink" href="#server-py" title="Permalink to this headline">¶</a></h2>
+<p>This module is a socket server used to communicate with the receiver and basically just handles commands.
+The code is pretty much self explanatory and can be found at the GITHUB pages under Olvhammar/GNURadio-FFTS.</p>
+</div>
+<div class="section" id="measurement-py">
+<h2>Measurement.py<a class="headerlink" href="#measurement-py" title="Permalink to this headline">¶</a></h2>
+<p>This is the most important class in the application since this is the base for the Dicke-switching.
+This class controls the Gnuradio flowgraph, Receiver.py, in order to separate the samples corresponding to signal or reference.
+Separation of the samples is based upon a switch that is controlled by the state of external SR and DV signals that is transmitted to the GPIO of the Ettus X310.
+It also contains functions such as automatic gain adjustment. The gain adjustment is based on monitoring the raw samples
+from the Ettus USRP. The distribution is then checked and gain set accordingly for several loops until the full dynamic range of the A/D converter is covered.</p>
+</div>
+<div class="section" id="receiver-py">
+<h2>Receiver.py<a class="headerlink" href="#receiver-py" title="Permalink to this headline">¶</a></h2>
+<p>Receiver.py is the Gnuradio flowgraph and is best explained using a gnuradio-companion flowgraph. The flowgraph is abit simplified
+and the FFTS includes blocks for e.g. sample monitoring, however that would just clutter the graph, but the fundamentals are displayed.
+The situation gets a bit more complicated for a two channel setup but the principle is similar.
+Se Software_HRC/Receiver.py for details.</p>
+<div class="figure align-center" id="id2">
+<a class="reference internal image-reference" href="_images/GnuRadio_DICKE.png"><img alt="test" src="_images/GnuRadio_DICKE.png" style="width: 1000px;" /></a>
+<p class="caption"><span class="caption-text">GNU Radio flow graph describing a general
+purpose FFT Dicke-switched solution for usage with
+front-ends implementing sky, load or frequency switching.</span></p>
+</div>
+<p>Basically it computes the Fast Fourier Transform (FFT) from the complex sample stream and saves it to file sinks. A in stream averaging procedure is implemented
+through a Single Pole IIR filter. The transfer function can be described by:</p>
+<div class="highlight-python"><div class="highlight"><pre>y(n) = (1-a)y(n-1) + ax(n)
+</pre></div>
+</div>
+<p>Which acts as a cheap and convenient way to perform integration. However it does not contain any decimation of it&#8217;s own why a keep 1 N block is introduced.
+Consider the case of a complex sampling rate 120 MSps and a 8192 channel FFT produces approximately 14.6e3 FFT/s. Setting a=1/20 and N=1/a the output of the keep 1 in N block is instead only 732 FFTs/s.
+Thus the implemented python long term integrator stress is greatly reduced along with processing times. For switched measurements it is however extremely important to make a good tradeoff in the selection of a
+due to the introduced delay. Ideally a switched measurement should use very small 1/a values. It is however great for SR=DV=1 measurements where a, with great benefits, can be very small.</p>
+<p>The stream selector at the sink side is fundamental for the Dicke-switching implementation. The stream will be switched based on the state of RF input. This state, signal or reference,
+is controlled by an external switch and it will transmit this information to the GPIO front panel. How this is done in Python can be seen in Measurement.py.</p>
+</div>
+<div class="section" id="analyze-py">
+<h2>Analyze.py<a class="headerlink" href="#analyze-py" title="Permalink to this headline">¶</a></h2>
+<p>This class stacks all FFT data and performs averaging.
+The switched data is stacked using the function pool.map to better utilize the cores and lower the processing time:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">stack_all_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+        <span class="n">pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">spectra</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stack_FFT_file</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
+        <span class="n">pool</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">spectra</span>
+</pre></div>
+</div>
+<p>Where self.stack_FFT_file is defined by:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1">#According to https://github.com/varenius/salsa/tree/master/USRP/usrp_gnuradio_dev</span>
+<span class="k">def</span> <span class="nf">stack_FFT_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">):</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">memmap</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">num_spec</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">size</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">fftSize</span><span class="p">)</span> <span class="c1">#The number of spectra contained in the file</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">num_spec</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">fftSize</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="n">signal</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">length</span><span class="p">]</span> <span class="c1">#Convert the array to an even number of spectras</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num_spec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fftSize</span><span class="p">))</span> <span class="c1">#Reshape the array with FFT:s so it can be easily stacked</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="c1">#Stack the FFT:s</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="n">spec</span><span class="o">/</span><span class="p">(</span><span class="mf">1.0</span><span class="o">*</span><span class="n">num_spec</span><span class="p">)</span> <span class="c1">#Average Spectrum</span>
+        <span class="k">del</span> <span class="n">signal</span>
+        <span class="k">return</span> <span class="n">spec</span>
+</pre></div>
+</div>
+<p>Which reads the file containing FFT data and returns one averaged FFT.
+Finally the mean value of the stacked FFTs is calculated:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spectra</span><span class="p">):</span>
+        <span class="n">sum_spec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">spectra</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sum_spec</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spectra</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="finalize-py">
+<h2>Finalize.py<a class="headerlink" href="#finalize-py" title="Permalink to this headline">¶</a></h2>
+<p>This class finalizes the measurement and performs e.g. the final averaging and creates FITS-files according to OSO-standards.</p>
+</div>
+<div class="section" id="improvements-and-other-toughts">
+<h2>Improvements and other toughts<a class="headerlink" href="#improvements-and-other-toughts" title="Permalink to this headline">¶</a></h2>
+<p>Things I would like to improve, any input would be greatly appreciated.</p>
+<div class="section" id="processing-delays">
+<h3>Processing delays<a class="headerlink" href="#processing-delays" title="Permalink to this headline">¶</a></h3>
+<p>Depending on the desired bandwidth the stacking process can take up to 3% of the total measure time, thus introducing a short processing delay between the measurements.
+I have greatly reduced the stacking time by the use of threads (i.e. pool.map), however I would like to run the stacking in the background so the stacking procedure can be performed during runtime.
+The problem is however restriced to switched measurements since it produces alot of individual files that need be stacked. This is not the case for SR=DV=1.</p>
+</div>
+<div class="section" id="alternatives-to-sync-bus-switching">
+<h3>Alternatives to sync bus switching<a class="headerlink" href="#alternatives-to-sync-bus-switching" title="Permalink to this headline">¶</a></h3>
+<p>Currently the mixer in the front-end of the system is controlled by a sync bus, which in turn sends the state signals (sig or ref) to the GPIO of the Ettus USRP.
+The optimal method, with GNU Radios unpredictable processing delay in mind, would be to instead having the software
+controlling the mixer instead of external hardware. This would allow for precise sample timing and thus I would be able to remove short delay I have introduced to make sure FFTs do not overlap.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="RfNoc.html" class="btn btn-neutral float-right" title="FPGA implementation using RFNoC" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Manual.html" class="btn btn-neutral" title="Spectrometer Manual" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Simon Olvhammar.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.7',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

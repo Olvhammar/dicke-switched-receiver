@@ -1,0 +1,25 @@
+## Using github easy version
+## Simon Olvhammar
+
+Se först till att följande är gjort för din lokala dator::
+git config --global user.name "John Doe"
+git config --global user.email johndoe@example.com
+
+Create repository in your account::
+
+	git clone https....
+
+To make a commit::
+
+	git add file eller git add -all
+	git commit -m "Vad det är för ändringar"
+	git push -u origin-master  #Lägger upp det online, -u origin-master endast första gången sedan vet den
+
+Bra kommandon::
+
+	git status
+	git log
+	git -help
+	git pull ## Uppdaterar den lokala mappen med det som finns på master
+
+
