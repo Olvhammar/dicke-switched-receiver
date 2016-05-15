@@ -65,12 +65,12 @@ Se Software_HRC/Receiver.py for details.
 Basically it computes the Fast Fourier Transform (FFT) from the complex sample stream and saves it to file sinks. A in stream averaging procedure is implemented
 through a Single Pole IIR filter. The transfer function can be described by::
 
-	y(n) = (1-a)y(n-1) + ax(n)
+	y(n) = (1-G)y(n-1) + Gx(n)
 	
-Which acts as a cheap and convenient way to perform integration. However it does not contain any decimation of it's own why a keep 1 N block is introduced.
-Consider the case of a complex sampling rate 120 MSps and a 8192 channel FFT produces approximately 14.6e3 FFT/s. Setting a=1/20 and N=1/a the output of the keep 1 in N block is instead only 732 FFTs/s. 
-Thus the implemented python long term integrator stress is greatly reduced along with processing times. For switched measurements it is however extremely important to make a good tradeoff in the selection of a
-due to the introduced delay. Ideally a switched measurement should use very small 1/a values. It is however great for SR=DV=1 measurements where a, with great benefits, can be very small.
+Which acts as a cheap and convenient way to perform integration. However it does not contain any decimation of it's own why a keep 1 in N block is introduced.
+Consider the case of a complex sampling rate 120 MSps and a 8192 channel FFT produces approximately 14.6e3 FFT/s. Setting G=1/20 and N=1/G the output of the keep 1 in N block is instead only 732 FFTs/s. 
+Thus the implemented python long term integrator stress is greatly reduced along with processing times. For switched measurements it is however extremely important to make a good tradeoff in the selection of G
+due to the introduced delay. Ideally a switched measurement should use very small 1/G values. It is however great for SR=DV=1 measurements where G, with great benefits, can be very small.
 
 The stream selector at the sink side is fundamental for the Dicke-switching implementation. The stream will be switched based on the state of RF input. This state, signal or reference,
 is controlled by an external switch and it will transmit this information to the GPIO front panel. How this is done in Python can be seen in Measurement.py.
@@ -124,6 +124,6 @@ The problem is however restriced to switched measurements since it produces alot
 Alternatives to sync bus switching
 ''''''''''''''''''''''''''''''''''
 Currently the mixer in the front-end of the system is controlled by a sync bus, which in turn sends the state signals (sig or ref) to the GPIO of the Ettus USRP.
-The optimal method, with GNU Radios unpredictable processing delay in mind, would be to instead having the software
-controlling the mixer instead of external hardware. This would allow for precise sample timing and thus I would be able to remove short delay I have introduced to make sure FFTs do not overlap.
+The optimal method, with GNU Radios unpredictable processing delay in mind, would be to instead having the GNURadio-FFTS software
+controlling the mixer instead of external systems. This would allow for precise sample timing and thus I would be able to remove short delay I have introduced to make sure FFTs do not overlap.
  
